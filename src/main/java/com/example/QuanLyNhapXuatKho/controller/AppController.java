@@ -1,9 +1,16 @@
 package com.example.QuanLyNhapXuatKho.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.QuanLyNhapXuatKho.entity.Role;
+import com.example.QuanLyNhapXuatKho.entity.SanPham;
+import com.example.QuanLyNhapXuatKho.entity.TaiKhoan;
 import com.example.QuanLyNhapXuatKho.repository.ChiTietNhapKhoRepository;
 import com.example.QuanLyNhapXuatKho.repository.ChiTietXuatKhoRepository;
 import com.example.QuanLyNhapXuatKho.repository.NhaCungCapRepository;
@@ -56,7 +63,22 @@ public class AppController {
     }
 
     @GetMapping("/register")
-    public String showRegisterPage(){
+    public String showRegisterPage(Model model){
+        model.addAttribute("taikhoan", new TaiKhoan());
+
         return "register";
+    }
+
+    @PostMapping("/process_register")
+    public String processRegister(TaiKhoan taiKhoan){
+        taiKhoan.setHoTen(taiKhoan.getHoTen());
+        taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
+        taiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
+        taiKhoan.setMatKhau(taiKhoan.getMatKhau());
+        taiKhoan.setRole(Role.KHACHHANG);
+
+        taiKhoanService.saveTaiKhoan(taiKhoan);
+
+        return "redirect:/login";
     }
 }
