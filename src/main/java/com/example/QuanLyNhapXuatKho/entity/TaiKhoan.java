@@ -20,7 +20,7 @@ import lombok.Setter;
 public class TaiKhoan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long maTaiKhoa;
+    private Long maTaiKhoan;
     @Column
     private String tenTaiKhoan;
     @Column

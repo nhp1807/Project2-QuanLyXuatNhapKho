@@ -57,6 +57,8 @@ public class AppController {
     @Autowired
     private TaiKhoanService taiKhoanService;
 
+    //-------------------------------Đăng nhập và đăng ký---------------------------------------
+
     @GetMapping("/login")
     public String showLoginPage(){
         return "login";
@@ -80,5 +82,14 @@ public class AppController {
         taiKhoanService.saveTaiKhoan(taiKhoan);
 
         return "redirect:/login";
+    }
+
+    //----------------------------------Admin----------------------------------------
+    @GetMapping("/admin/danh-sach-tai-khoan")
+    public String showDanhSachTaiKhoan(Model model){
+        List<TaiKhoan> listTaiKhoan = taiKhoanService.getAllTaiKhoan();
+        model.addAttribute("listTaiKhoan", listTaiKhoan);
+
+        return "ad_dstk";
     }
 }
