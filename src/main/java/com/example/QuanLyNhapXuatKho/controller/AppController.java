@@ -1,6 +1,8 @@
 package com.example.QuanLyNhapXuatKho.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.QuanLyNhapXuatKho.repository.ChiTietNhapKhoRepository;
 import com.example.QuanLyNhapXuatKho.repository.ChiTietXuatKhoRepository;
@@ -17,6 +19,7 @@ import com.example.QuanLyNhapXuatKho.service.SanPhamService;
 import com.example.QuanLyNhapXuatKho.service.TaiKhoanService;
 import com.example.QuanLyNhapXuatKho.service.XuatKhoService;
 
+@Controller
 public class AppController {
     @Autowired
     private ChiTietNhapKhoRepository chiTietNhapKhoRepository;
@@ -46,4 +49,14 @@ public class AppController {
     private TaiKhoanRepository taiKhoanRepository;
     @Autowired
     private TaiKhoanService taiKhoanService;
+
+    @GetMapping("/login")
+    public String showLoginPage(){
+        return "login";
+    }
+
+    @GetMapping("/register")
+    public String showRegisterPage(){
+        return "register";
+    }
 }
