@@ -30,6 +30,13 @@ public class ChiTietXuatKho {
     @Column
     private Long donGia;
     
+    public ChiTietXuatKho(Long maXuatKho, Long maSanPham, int soLuong, Long donGia) {
+        this.maXuatKho = maXuatKho;
+        this.maSanPham = maSanPham;
+        this.soLuong = soLuong;
+        this.donGia = donGia;
+    }
+
     public ChiTietXuatKho(int soLuong, Long donGia) {
         this.soLuong = soLuong;
         this.donGia = donGia;

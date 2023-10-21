@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhapXuatKho.entity.ChiTietNhapKho;
-import com.example.QuanLyNhapXuatKho.entity.NhapKho;
 import com.example.QuanLyNhapXuatKho.repository.ChiTietNhapKhoRepository;
 
 @Service
 public class ChiTietNhapKhoServiceImpl implements ChiTietNhapKhoService {
     @Autowired
     ChiTietNhapKhoRepository chiTietNhapKhoRepository;
-
+    
     @Override
     public List<ChiTietNhapKho> getAllChiTietNhapKho() {
         return chiTietNhapKhoRepository.findAll();
