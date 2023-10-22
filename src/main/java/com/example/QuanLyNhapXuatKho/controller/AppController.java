@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.example.QuanLyNhapXuatKho.entity.Role;
@@ -85,11 +87,64 @@ public class AppController {
     }
 
     //----------------------------------Admin----------------------------------------
+    @GetMapping("/admin/trang-chu")
+    public String showTrangChuAdmin(){
+        return "ad_trang_chu";
+    }
+
     @GetMapping("/admin/danh-sach-tai-khoan")
     public String showDanhSachTaiKhoan(Model model){
         List<TaiKhoan> listTaiKhoan = taiKhoanService.getAllTaiKhoan();
         model.addAttribute("listTaiKhoan", listTaiKhoan);
 
         return "ad_dstk";
+    }
+
+    @GetMapping("/admin/thong-tin-ca-nhan")
+    public String showThongTinCaNhanAdmin(){
+        return "ad_thong_tin";
+    }
+
+    @GetMapping("/admin/doi-mat-khau")
+    public String showDoiMatKhauAdmin(){
+        return "ad_doi_mat_khau";
+    }
+
+    @PostMapping("/admin/doi-mat-khau")
+    public String updateMatKhauAdmin(){
+        return "TODO: update password";
+    }
+
+    @GetMapping("/admin/danh-sach-tai-khoan/xoa/{maTaiKhoan}")
+    public String deleteTaiKhoan(@PathVariable Long maTaiKhoan){
+        taiKhoanService.deleteTaiKhoan(maTaiKhoan);
+
+        return "redirect:/admin/danh-sach-tai-khoan";
+    }
+
+    @GetMapping("/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}")
+    public String showEditThongTinTaiKhoanAdmin(@PathVariable Long maTaiKhoan, Model model){
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(maTaiKhoan));
+
+        return "ad_chinh_sua_thong_tin";
+    }
+
+    @PostMapping("/admin/danh-sach-tai-khoan/{maTaiKhoan}")
+    public String updateTaiKhoanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
+
+        existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
+        existingTaiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
+        existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
+        existingTaiKhoan.setCccd(taiKhoan.getCccd());
+        existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
+        existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
+        existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
+        existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
+        existingTaiKhoan.setMatKhau(taiKhoan.getMatKhau());
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+
+        return "redirect:/admin/danh-sach-tai-khoan";
     }
 }
