@@ -51,6 +51,8 @@ public class RoleSecurityConfig {
             .anyRequest().authenticated()
             .and()
         .formLogin()
+            // .loginPage("/login")
+            // .usernameParameter("tenTaiKhoan")
             .successHandler(authenticationSuccessHandler) // Set the custom authentication success handler
             .failureHandler(authenticationFailureHandler) // Set the custom authentication failure handler
             .permitAll()

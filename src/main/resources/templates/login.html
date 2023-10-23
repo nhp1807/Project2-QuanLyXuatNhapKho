@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="../css/login_styles.css">
-    <!-- <script src="../static/js/login.js"></script> -->
+    <link rel="stylesheet" href="/css/login_styles.css">
 
     <title>Đăng nhập</title>
 </head>
@@ -21,18 +20,18 @@
                         <div class="card-header text-center" style="font-size: 2rem;">
                             Đăng nhập
                         </div>
-                        <img src="../image/logo.jpg" class="mx-auto mt-3" width="50%" alt="">
+                        <img src="/image/logo.jpg" class="mx-auto mt-3" width="50%" alt="">
                         <div class="card-body">
-                            <form id="loginForm">
+                            <form id="loginForm" th:action="@{/login}" method="post">
                                 <div class="col">
                                     <div class="row">
-                                        <input type="text" name="" id="tenDangNhap" placeholder="Tên tài khoản">
+                                        <input type="text" name="" id="tenTaiKhoan" placeholder="Tên tài khoản">
                                     </div>
                                     <div class="row">
-                                        <input type="text" name="" id="matKhau" placeholder="Mật khẩu">
+                                        <input type="password" name="" id="matKhau" placeholder="Mật khẩu">
                                     </div>
-                                    <button type="button" class="btn btn-primary" onclick="login()">Đăng nhập</button>
-                                    <p class="pt-3">Chưa có tài khoản? <a href="./register.html">Đăng ký</a></p>
+                                    <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                                    <p class="pt-3">Chưa có tài khoản? <a href="/register.html">Đăng ký</a></p>
                                 </div>
                             </form>
                         </div>
