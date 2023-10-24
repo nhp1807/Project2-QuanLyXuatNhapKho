@@ -43,7 +43,7 @@ public class RoleSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests().requestMatchers("/").permitAll();
+        // http.authorizeRequests().requestMatchers("/").permitAll();
         http.authorizeRequests()
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
             .requestMatchers("/ke-toan/**").hasAuthority("KETOAN")
@@ -51,8 +51,9 @@ public class RoleSecurityConfig {
             .anyRequest().authenticated()
             .and()
         .formLogin()
-            // .loginPage("/login")
-            // .usernameParameter("tenTaiKhoan")
+            .loginPage("/login")
+            .usernameParameter("tenTaiKhoan")
+            .passwordParameter("matKhau")
             .successHandler(authenticationSuccessHandler) // Set the custom authentication success handler
             .failureHandler(authenticationFailureHandler) // Set the custom authentication failure handler
             .permitAll()

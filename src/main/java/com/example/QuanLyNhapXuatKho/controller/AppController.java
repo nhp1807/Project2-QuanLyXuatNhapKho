@@ -3,6 +3,7 @@ package com.example.QuanLyNhapXuatKho.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +28,8 @@ import com.example.QuanLyNhapXuatKho.service.NhapKhoService;
 import com.example.QuanLyNhapXuatKho.service.SanPhamService;
 import com.example.QuanLyNhapXuatKho.service.TaiKhoanService;
 import com.example.QuanLyNhapXuatKho.service.XuatKhoService;
+
+import jakarta.validation.Valid;
 
 @Controller
 public class AppController {
@@ -75,10 +78,11 @@ public class AppController {
 
     @PostMapping("/process_register")
     public String processRegister(TaiKhoan taiKhoan){
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         taiKhoan.setHoTen(taiKhoan.getHoTen());
         taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
         taiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
-        taiKhoan.setMatKhau(taiKhoan.getMatKhau());
+        taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
         taiKhoan.setRole(Role.KHACHHANG);
 
         taiKhoanService.saveTaiKhoan(taiKhoan);
@@ -122,6 +126,18 @@ public class AppController {
         return "redirect:/admin/danh-sach-tai-khoan";
     }
 
+    @GetMapping("/admin/them-tai-khoan")
+    public String showThemTaiKhoanPage(){
+        return "ad_them_tai_khoan";
+    }
+
+    @PostMapping("/admin/them-tai-khoan")
+    public String saveTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+        taiKhoanService.saveTaiKhoan(taiKhoan);
+
+        return "redirect:/admin/danh-sach-tai-khoan";
+    }
+
     @GetMapping("/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}")
     public String showEditThongTinTaiKhoanAdmin(@PathVariable Long maTaiKhoan, Model model){
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(maTaiKhoan));
@@ -146,5 +162,11 @@ public class AppController {
         taiKhoanService.updateTaiKhoan(existingTaiKhoan);
 
         return "redirect:/admin/danh-sach-tai-khoan";
+    }
+
+    //-----------------------------Khách hàng-------------------------------
+    @GetMapping("/khach-hang/trang-chu")
+    public String showTrangChuKhachHang(){
+        return "kh_trang_chu";
     }
 }
