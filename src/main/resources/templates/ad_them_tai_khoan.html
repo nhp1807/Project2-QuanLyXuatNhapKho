@@ -17,19 +17,22 @@
 <body>
   <div class="sidebar">
     <div class="information">
-      <!-- <img src="../image/img1.jpg" width="10%" alt=""> -->
+      <img src="/image/logo.jpg" width="10%" alt="">
     </div>
-    <h2>Welcome Phong</h2>
+    <h2>Welcome, <a href="" th:text="${currentAccount}"></a></h2>
     <div>
       <div class="header-nav"><span class="material-symbols-outlined">home</span><a th:href="@{/admin/trang-chu}">Trang
-        chủ</a></div>
-    <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
-        th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
-    <div class="header-nav"><span class="material-symbols-outlined">info</span><a
-        th:href="@{/admin/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
-    <div class="header-nav"><span class="material-symbols-outlined">password</span><a
-        th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
-    <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a></div>
+          chủ</a></div>
+      <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
+          th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
+      <div class="header-nav"><span class="material-symbols-outlined">info</span><a
+          th:href="@{/admin/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
+      <div class="header-nav"><span class="material-symbols-outlined">password</span><a
+          th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
+      <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a 
+          th:href="@{/admin/danh-sach-san-pham}">Danh sách sản phẩm</a></div>
+      <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a>
+      </div>
     </div>
   </div>
 
@@ -56,11 +59,11 @@
         </div>
 
         <div class="information-section">
-            <div>
-              <p>Mật khẩu</p>
-            </div>
-            <div><input type="text" th:field="*{matKhau}" class="information-section-input"></div>
+          <div>
+            <p>Mật khẩu</p>
           </div>
+          <div><input type="password" th:field="*{matKhau}" class="information-section-input"></div>
+        </div>
 
         <div class="information-section">
           <div>
@@ -96,10 +99,10 @@
           </div>
           <div>
             <select th:field="*{chucVu}" class="information-section-input">
-              <option value="luachon">Lựa chọn chức vụ</option>
-              <option value="admin">Admin</option>
-              <option value="khachhang">Khách hàng</option>
-              <option value="ketoan">Kế toán</option>
+              <option value="">Lựa chọn chức vụ</option>
+              <option value="Admin">Admin</option>
+              <option value="Khách hàng">Khách hàng</option>
+              <option value="Kế toán">Kế toán</option>
             </select>
             <!-- <input type="text" class="information-section-input"></div> -->
           </div>

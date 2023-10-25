@@ -8,6 +8,9 @@
 .information{
     padding: 20px 0px;
     height: 150px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
 }
 
 .sidebar h2 {

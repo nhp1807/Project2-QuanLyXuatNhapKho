@@ -58,6 +58,11 @@ public class CustomUserDetails implements UserDetails {
         return taiKhoan.getHoTen();
     }
 
+    public String getLastName(String name){
+        String[] names = name.split(" ");
+        return names[names.length - 1];
+    }
+
     public Long getId(){
         return taiKhoan.getMaTaiKhoan();
     }
