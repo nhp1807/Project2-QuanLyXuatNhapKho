@@ -20,18 +20,17 @@
     <div class="information">
       <!-- <img src="../image/img1.jpg" width="10%" alt=""> -->
     </div>
-    <h2>Welcome Phong</h2>
+    <h2>Welcome Admin</h2>
     <div>
       <div class="header-nav"><span class="material-symbols-outlined">home</span><a th:href="@{/admin/trang-chu}">Trang
-          chủ</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
-          th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">info</span><a
-          th:href="@{/admin/thong-tin-ca-nhan}">Thông tin cá nhân</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">password</span><a
-          th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a>
-      </div>
+        chủ</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
+        th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">info</span><a
+        th:href="@{/admin/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">password</span><a
+        th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a></div>
     </div>
   </div>
   <div class="content">
@@ -57,18 +56,18 @@
       </thead>
       <tbody>
         <tr th:each="taikhoan: ${listTaiKhoan}">
-          <th class="align-middle" th:text="${taikhoan.maTaiKhoan}"></th>
-          <th class="align-middle" th:text="${taikhoan.tenTaiKhoan}"></th>
+          <th class="align-middle text-center" th:text="${taikhoan.maTaiKhoan}"></th>
+          <th class="align-middle text-center" th:text="${taikhoan.tenTaiKhoan}"></th>
           <th class="align-middle" th:text="${taikhoan.hoTen}"></th>
-          <th class="align-middle" th:text="${taikhoan.cccd}"></th>
-          <th class="align-middle" th:text="${taikhoan.queQuan}"></th>
-          <th class="align-middle" th:text="${taikhoan.soDienThoai}"></th>
-          <th class="align-middle" th:text="${taikhoan.chucVu}"></th>
-          <th>
+          <th class="align-middle text-center" th:text="${taikhoan.cccd}"></th>
+          <th class="align-middle text-center" th:text="${taikhoan.queQuan}"></th>
+          <th class="align-middle text-center" th:text="${taikhoan.soDienThoai}"></th>
+          <th class="align-middle text-center" th:text="${taikhoan.chucVu}"></th>
+          <th class="text-center">
             <a th:href="@{/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}(maTaiKhoan=${taikhoan.maTaiKhoan})}"
-              class="btn btn-danger">Sửa</a>
+              class="btn btn-primary">Sửa</a>
             <a th:href="@{/admin/danh-sach-tai-khoan/xoa/{maTaiKhoan}(maTaiKhoan=${taikhoan.maTaiKhoan})}"
-              class="btn btn-primary">Xóa</a>
+              class="btn btn-danger">Xóa</a>
           </th>
         </tr>
       </tbody>

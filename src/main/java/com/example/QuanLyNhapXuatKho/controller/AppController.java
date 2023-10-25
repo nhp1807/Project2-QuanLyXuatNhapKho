@@ -1,5 +1,6 @@
 package com.example.QuanLyNhapXuatKho.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,8 @@ public class AppController {
     @Autowired
     private TaiKhoanService taiKhoanService;
 
+    public Long idDangNhap;
+
     //-------------------------------Đăng nhập và đăng ký---------------------------------------
 
     @GetMapping("/login")
@@ -83,6 +86,7 @@ public class AppController {
         taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
         taiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
         taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        taiKhoan.setChucVu("Khách hàng");
         taiKhoan.setRole(Role.KHACHHANG);
 
         taiKhoanService.saveTaiKhoan(taiKhoan);
@@ -92,7 +96,10 @@ public class AppController {
 
     //----------------------------------Admin----------------------------------------
     @GetMapping("/admin/trang-chu")
-    public String showTrangChuAdmin(){
+    public String showTrangChuAdmin(Principal principal){
+        String tenDangNhap = principal.getName();
+        idDangNhap = taiKhoanRepository.findByTenTaiKhoan(tenDangNhap).getMaTaiKhoan();
+        System.out.println(idDangNhap);
         return "ad_trang_chu";
     }
 
@@ -104,19 +111,51 @@ public class AppController {
         return "ad_dstk";
     }
 
-    @GetMapping("/admin/thong-tin-ca-nhan")
-    public String showThongTinCaNhanAdmin(){
-        return "ad_thong_tin";
+    // @GetMapping("/admin/thong-tin-ca-nhan")
+    // public String showThongTinCaNhanAdmin(Model model){
+    //     model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
+    //     return "ad_thong_tin";
+    // }
+
+    @GetMapping("admin/thong-tin-ca-nhan/{maTaiKhoan}")
+    public String updateThongTinCaNhanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
+
+        existingTaiKhoan.setMaTaiKhoan(maTaiKhoan);
+        existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
+        existingTaiKhoan.setCccd(taiKhoan.getCccd());
+        existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
+        existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
+        existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
+        existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+
+        return "redirect:/admin/danh-sach-tai-khoan";
     }
 
     @GetMapping("/admin/doi-mat-khau")
-    public String showDoiMatKhauAdmin(){
+    public String showDoiMatKhauAdmin(Model model){
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
         return "ad_doi_mat_khau";
     }
 
     @PostMapping("/admin/doi-mat-khau")
-    public String updateMatKhauAdmin(){
-        return "TODO: update password";
+    public String updateMatKhauAdmin(Model model, Principal principal, @ModelAttribute("taikhoan") TaiKhoan taiKhoan){
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(idDangNhap);
+
+        if(!taiKhoan.getMatKhau().equals(taiKhoan.getReMatKhau())){
+            return "redirect:/admin/doi-mat-khau";
+        }
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        existingTaiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        existingTaiKhoan.setReMatKhau(existingTaiKhoan.getMatKhau());
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+
+        return "redirect:/admin/danh-sach-tai-khoan";
     }
 
     @GetMapping("/admin/danh-sach-tai-khoan/xoa/{maTaiKhoan}")
@@ -138,14 +177,14 @@ public class AppController {
         return "redirect:/admin/danh-sach-tai-khoan";
     }
 
-    @GetMapping("/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}")
-    public String showEditThongTinTaiKhoanAdmin(@PathVariable Long maTaiKhoan, Model model){
-        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(maTaiKhoan));
+    @GetMapping("/admin/chinh-sua-thong-tin")
+    public String showEditThongTinTaiKhoanAdmin(Model model){
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
 
         return "ad_chinh_sua_thong_tin";
     }
 
-    @PostMapping("/admin/danh-sach-tai-khoan/{maTaiKhoan}")
+    @PostMapping("/admin/chinh-sua-thong-tin/{maTaiKhoan}")
     public String updateTaiKhoanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
@@ -156,8 +195,6 @@ public class AppController {
         existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
         existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
         existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
-        existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
-        existingTaiKhoan.setMatKhau(taiKhoan.getMatKhau());
 
         taiKhoanService.updateTaiKhoan(existingTaiKhoan);
 
