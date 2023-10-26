@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.QuanLyNhapXuatKho.entity.NhaCungCap;
 import com.example.QuanLyNhapXuatKho.entity.Role;
 import com.example.QuanLyNhapXuatKho.entity.SanPham;
 import com.example.QuanLyNhapXuatKho.entity.TaiKhoan;
@@ -212,7 +213,7 @@ public class AppController {
      * Xử lý thêm tài khoản
      */
     @PostMapping("/admin/them-tai-khoan")
-    public String saveTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model) {
+    public String saveTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
         if (taiKhoan.getChucVu().equals("Admin")) {
             taiKhoan.setRole(Role.ADMIN);
         } else if (taiKhoan.getChucVu().equals("Khách hàng")) {
@@ -309,6 +310,72 @@ public class AppController {
         return "redirect:/admin/danh-sach-tai-khoan";
     }
 
+    /*
+     * Hiển thị danh sách các nhà cung cấp cho admin
+     */
+    @GetMapping("/admin/danh-sach-nha-cung-cap")
+    public String showDanhSachNhaCungCapAdmin(Model model){
+        model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "ad_nha_cung_cap";
+    }
+
+    /*
+     * Hiển thị giao diện thêm nhà cung cấp
+     */
+    @GetMapping("/admin/them-nha-cung-cap")
+    public String showThemNhaCungCapPageAdmin(Model model){
+        model.addAttribute("nhacungcap", new NhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "ad_them_nha_cung_cap";
+    }
+
+    /*
+     * Xử lý thêm nhà cung cấp
+     */
+    @PostMapping("admin/them-nha-cung-cap")
+    public String addNhaCungCapAdmin(@ModelAttribute("nhacungcap") NhaCungCap nhaCungCap){
+        nhaCungCapService.saveNhaCungCap(nhaCungCap);
+        return "redirect:/admin/danh-sach-nha-cung-cap";
+    }
+
+    /*
+     * Xóa nhà cung cấp
+     */
+    @GetMapping("/admin/danh-sach-nha-cung-cap/xoa/{maNhaCungCap}")
+    public String deleteNhaCungCapAdmin(@PathVariable Long maNhaCungCap){
+        nhaCungCapService.deleteNhaCungCap(maNhaCungCap);
+        return "redirect:/admin/danh-sach-nha-cung-cap";
+    }
+
+    /*
+     * Hiển thị sửa nhà cung cấp cho admin
+     */
+    @GetMapping("/admin/danh-sach-nha-cung-cap/{maNhaCungCap}")
+    public String showEditNhaCungCap(Model model, @PathVariable Long maNhaCungCap){
+        model.addAttribute("nhacungcap", nhaCungCapService.getNhaCungCap(maNhaCungCap));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "ad_sua_nha_cung_cap";
+    }
+
+    @PostMapping("/admin/danh-sach-nha-cung-cap/chinh-sua/{maNhaCungCap}")
+    public String editNhaCungCap(@PathVariable Long maNhaCungCap, @ModelAttribute("nhacungcap") NhaCungCap nhaCungCap){
+        NhaCungCap existingNhaCungCap = nhaCungCapService.getNhaCungCap(maNhaCungCap);
+        existingNhaCungCap.setMaNhaCungCap(nhaCungCap.getMaNhaCungCap());
+        existingNhaCungCap.setTenNhaCungCap(nhaCungCap.getTenNhaCungCap());
+        existingNhaCungCap.setDiaChi(nhaCungCap.getDiaChi());
+        existingNhaCungCap.setEmail(nhaCungCap.getEmail());
+        existingNhaCungCap.setSoDienThoai(nhaCungCap.getSoDienThoai());
+
+        nhaCungCapService.updateNhaCungCap(existingNhaCungCap);
+        
+        return "redirect:/admin/danh-sach-nha-cung-cap";
+    }
+        
+    
     // -----------------------------Khách hàng-------------------------------
     @GetMapping("/khach-hang/trang-chu")
     public String showTrangChuKhachHang() {
