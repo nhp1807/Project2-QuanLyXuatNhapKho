@@ -220,6 +220,9 @@ public class AppController {
         } else {
             taiKhoan.setRole(Role.KETOAN);
         }
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        taiKhoan.setReMatKhau(taiKhoan.getMatKhau());
         taiKhoanService.saveTaiKhoan(taiKhoan);
 
         return "redirect:/admin/danh-sach-tai-khoan";
@@ -314,6 +317,15 @@ public class AppController {
 
     // ------------------------------Kế toán---------------------------------
 
+    @GetMapping("ke-toan/trang-chu")
+    public String showTrangChuKeToan(Principal principal, Model model){
+        String tenDangNhap = principal.getName();
+        idDangNhap = taiKhoanRepository.findByTenTaiKhoan(tenDangNhap).getMaTaiKhoan();
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kt_trang_chu";
+    }
     // ---------------------------Chức năng phụ------------------------------
     public String getLastName(String name) {
         String[] names = name.split(" ");
