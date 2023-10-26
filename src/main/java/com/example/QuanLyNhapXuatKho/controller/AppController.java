@@ -1,6 +1,7 @@
 package com.example.QuanLyNhapXuatKho.controller;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,14 @@ public class AppController {
 
     public Long idDangNhap;
 
-    //-------------------------------Đăng nhập và đăng ký---------------------------------------
+    // -------------------------------Đăng nhập và đăng
+    // ký---------------------------------------
 
     /*
      * Hiển thị giao diện login
      */
     @GetMapping("/login")
-    public String showLoginPage(){
+    public String showLoginPage() {
         return "login";
     }
 
@@ -79,7 +81,7 @@ public class AppController {
      * Hiển thị giao diện đăng ký
      */
     @GetMapping("/register")
-    public String showRegisterPage(Model model){
+    public String showRegisterPage(Model model) {
         model.addAttribute("taikhoan", new TaiKhoan());
 
         return "register";
@@ -89,7 +91,7 @@ public class AppController {
      * Xử lý đăng ký
      */
     @PostMapping("/process_register")
-    public String processRegister(TaiKhoan taiKhoan){
+    public String processRegister(TaiKhoan taiKhoan) {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         taiKhoan.setHoTen(taiKhoan.getHoTen());
         taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
@@ -103,16 +105,16 @@ public class AppController {
         return "redirect:/login";
     }
 
-    //----------------------------------Admin----------------------------------------
+    // ----------------------------------Admin----------------------------------------
     /*
      * Hiển thị trang chủ cho admin
      */
     @GetMapping("/admin/trang-chu")
-    public String showTrangChuAdmin(Principal principal, Model model){
+    public String showTrangChuAdmin(Principal principal, Model model) {
         String tenDangNhap = principal.getName();
         idDangNhap = taiKhoanRepository.findByTenTaiKhoan(tenDangNhap).getMaTaiKhoan();
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-        
+
         model.addAttribute("currentAccount", getLastName(currentName));
         return "ad_trang_chu";
     }
@@ -121,7 +123,7 @@ public class AppController {
      * Hiển thị danh sách tài khoản cho admin
      */
     @GetMapping("/admin/danh-sach-tai-khoan")
-    public String showDanhSachTaiKhoan(Model model){
+    public String showDanhSachTaiKhoan(Model model) {
         List<TaiKhoan> listTaiKhoan = taiKhoanService.getAllTaiKhoan();
         model.addAttribute("listTaiKhoan", listTaiKhoan);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -134,29 +136,30 @@ public class AppController {
      * Hiển thị thông tin cá nhân của admin
      */
     // @GetMapping("admin/thong-tin-ca-nhan/{maTaiKhoan}")
-    // public String updateThongTinCaNhanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
-    //     TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
+    // public String updateThongTinCaNhanAdmin(@PathVariable Long maTaiKhoan,
+    // @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+    // TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
-    //     existingTaiKhoan.setMaTaiKhoan(maTaiKhoan);
-    //     existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
-    //     existingTaiKhoan.setCccd(taiKhoan.getCccd());
-    //     existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
-    //     existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
-    //     existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
-    //     existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
+    // existingTaiKhoan.setMaTaiKhoan(maTaiKhoan);
+    // existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
+    // existingTaiKhoan.setCccd(taiKhoan.getCccd());
+    // existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
+    // existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
+    // existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
+    // existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
 
-    //     taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+    // taiKhoanService.updateTaiKhoan(existingTaiKhoan);
 
-    //     String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-    //     model.addAttribute("currentAccount", getLastName(currentName));
-    //     return "redirect:/admin/danh-sach-tai-khoan";
+    // String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+    // model.addAttribute("currentAccount", getLastName(currentName));
+    // return "redirect:/admin/danh-sach-tai-khoan";
     // }
 
     /*
      * Hiển thị giao diện đổi mật khẩu cho admin
      */
     @GetMapping("/admin/doi-mat-khau")
-    public String showDoiMatKhauAdmin(Model model){
+    public String showDoiMatKhauAdmin(Model model) {
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -167,10 +170,10 @@ public class AppController {
      * Xử lý đổi mật khẩu
      */
     @PostMapping("/admin/doi-mat-khau")
-    public String updateMatKhauAdmin(Model model, Principal principal, @ModelAttribute("taikhoan") TaiKhoan taiKhoan){
+    public String updateMatKhauAdmin(Model model, Principal principal, @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(idDangNhap);
 
-        if(!taiKhoan.getMatKhau().equals(taiKhoan.getReMatKhau())){
+        if (!taiKhoan.getMatKhau().equals(taiKhoan.getReMatKhau())) {
             return "redirect:/admin/doi-mat-khau";
         }
 
@@ -184,12 +187,11 @@ public class AppController {
         return "redirect:/admin/danh-sach-tai-khoan";
     }
 
-
     /*
      * Xóa tài khoản cho admin
      */
     @GetMapping("/admin/danh-sach-tai-khoan/xoa/{maTaiKhoan}")
-    public String deleteTaiKhoan(@PathVariable Long maTaiKhoan){
+    public String deleteTaiKhoan(@PathVariable Long maTaiKhoan) {
         taiKhoanService.deleteTaiKhoan(maTaiKhoan);
 
         return "redirect:/admin/danh-sach-tai-khoan";
@@ -199,7 +201,7 @@ public class AppController {
      * Hiển thị giao diện thêm tài khoản cho admin
      */
     @GetMapping("/admin/them-tai-khoan")
-    public String showThemTaiKhoanPage(Model model){
+    public String showThemTaiKhoanPage(Model model) {
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
         model.addAttribute("taikhoan", new TaiKhoan());
@@ -210,12 +212,12 @@ public class AppController {
      * Xử lý thêm tài khoản
      */
     @PostMapping("/admin/them-tai-khoan")
-    public String saveTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
-        if(taiKhoan.getChucVu().equals("Admin")){
+    public String saveTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model) {
+        if (taiKhoan.getChucVu().equals("Admin")) {
             taiKhoan.setRole(Role.ADMIN);
-        }else if(taiKhoan.getChucVu().equals("Khách hàng")){
+        } else if (taiKhoan.getChucVu().equals("Khách hàng")) {
             taiKhoan.setRole(Role.KHACHHANG);
-        }else{
+        } else {
             taiKhoan.setRole(Role.KETOAN);
         }
         taiKhoanService.saveTaiKhoan(taiKhoan);
@@ -227,7 +229,7 @@ public class AppController {
      * Hiển thị giao diện chỉnh sửa thông tin
      */
     @GetMapping("/admin/chinh-sua-thong-tin")
-    public String showEditThongTinTaiKhoanAdmin(Model model){
+    public String showEditThongTinTaiKhoanAdmin(Model model) {
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -239,7 +241,8 @@ public class AppController {
      * Xử lý sửa thông tin
      */
     @PostMapping("/admin/chinh-sua-thong-tin/{maTaiKhoan}")
-    public String updateTaiKhoanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+    public String updateTaiKhoanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
+            Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
@@ -249,11 +252,11 @@ public class AppController {
         existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
         existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
         existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
-        if(taiKhoan.getChucVu().equals("Admin")){
+        if (taiKhoan.getChucVu().equals("Admin")) {
             existingTaiKhoan.setRole(Role.ADMIN);
-        }else if(taiKhoan.getChucVu().equals("Khách hàng")){
+        } else if (taiKhoan.getChucVu().equals("Khách hàng")) {
             existingTaiKhoan.setRole(Role.KHACHHANG);
-        }else{
+        } else {
             existingTaiKhoan.setRole(Role.KETOAN);
         }
 
@@ -266,7 +269,7 @@ public class AppController {
      * Hiển thị sửa thông tin khách hàng
      */
     @GetMapping("/admin/danh-sach-tai-khoan/{maTaiKhoan}")
-    public String showEditThongTinKhachHang(@PathVariable Long maTaiKhoan, Model model){
+    public String showEditThongTinKhachHang(@PathVariable Long maTaiKhoan, Model model) {
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(maTaiKhoan));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -278,7 +281,8 @@ public class AppController {
      * Xử lý sửa thông tin khách hàng
      */
     @PostMapping("/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}")
-    public String editTaiKhoanKhachHang(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+    public String editTaiKhoanKhachHang(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
+            Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
@@ -289,11 +293,11 @@ public class AppController {
         existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
         existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
         existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
-        if(taiKhoan.getChucVu().equals("Admin")){
+        if (taiKhoan.getChucVu().equals("Admin")) {
             existingTaiKhoan.setRole(Role.ADMIN);
-        }else if(taiKhoan.getChucVu().equals("Khách hàng")){
+        } else if (taiKhoan.getChucVu().equals("Khách hàng")) {
             existingTaiKhoan.setRole(Role.KHACHHANG);
-        }else{
+        } else {
             existingTaiKhoan.setRole(Role.KETOAN);
         }
 
@@ -302,19 +306,87 @@ public class AppController {
         return "redirect:/admin/danh-sach-tai-khoan";
     }
 
-    //-----------------------------Khách hàng-------------------------------
+    // -----------------------------Khách hàng-------------------------------
     @GetMapping("/khach-hang/trang-chu")
-    public String showTrangChuKhachHang(){
+    public String showTrangChuKhachHang() {
         return "kh_trang_chu";
     }
 
-    //------------------------------Kế toán---------------------------------
+    // ------------------------------Kế toán---------------------------------
 
-
-
-    //---------------------------Chức năng phụ------------------------------
-    public String getLastName(String name){
+    // ---------------------------Chức năng phụ------------------------------
+    public String getLastName(String name) {
         String[] names = name.split(" ");
         return names[names.length - 1];
+    }
+
+    public String generateMaTaiKhoan(String chucVu) {
+        if (chucVu.equals("Admin")) {
+            int max = 0;
+            List<TaiKhoan> taiKhoanAdmin = listTaiKhoanByChucVu(chucVu);
+
+            for (TaiKhoan taiKhoan : taiKhoanAdmin) {
+                String ma = "AD123";
+                int currentMa = Integer.parseInt(ma.substring(2));
+                if (max > currentMa) {
+                    max = currentMa;
+                }
+
+            }
+
+            return "AD" + (max + 1);
+        } else if (chucVu.equals("Khách hàng")) {
+            int max = 0;
+            List<TaiKhoan> taiKhoanAdmin = listTaiKhoanByChucVu(chucVu);
+
+            for (TaiKhoan taiKhoan : taiKhoanAdmin) {
+                String ma = "KH123";
+                int currentMa = Integer.parseInt(ma.substring(2));
+                if (max > currentMa) {
+                    max = currentMa;
+                }
+
+            }
+
+            return "KH" + (max + 1);
+        } else {
+            int max = 0;
+            List<TaiKhoan> taiKhoanAdmin = listTaiKhoanByChucVu(chucVu);
+
+            for (TaiKhoan taiKhoan : taiKhoanAdmin) {
+                String ma = "KT123";
+                int currentMa = Integer.parseInt(ma.substring(2));
+                if (max > currentMa) {
+                    max = currentMa;
+                }
+
+            }
+
+            return "KT" + (max + 1);
+        }
+    }
+
+    public List<TaiKhoan> listTaiKhoanByChucVu(String chucVu) {
+        List<TaiKhoan> listTaiKhoan = new ArrayList<>();
+        if (chucVu.equals("Admin")) {
+            for (TaiKhoan taiKhoan : taiKhoanService.getAllTaiKhoan()) {
+                if (taiKhoan.getRole() == Role.ADMIN) {
+                    listTaiKhoan.add(taiKhoan);
+                }
+            }
+        } else if (chucVu.equals("Khách hàng")) {
+            for (TaiKhoan taiKhoan : taiKhoanService.getAllTaiKhoan()) {
+                if (taiKhoan.getRole() == Role.KHACHHANG) {
+                    listTaiKhoan.add(taiKhoan);
+                }
+            }
+        } else {
+            for (TaiKhoan taiKhoan : taiKhoanService.getAllTaiKhoan()) {
+                if (taiKhoan.getRole() == Role.KETOAN) {
+                    listTaiKhoan.add(taiKhoan);
+                }
+            }
+        }
+        return listTaiKhoan;
     }
 }
