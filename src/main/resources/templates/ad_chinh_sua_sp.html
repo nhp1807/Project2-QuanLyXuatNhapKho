@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/css/form_styles.css">
     <link rel="stylesheet" href="/css/navbar_styles.css">
 
-    <title>Thông tin tài khoản</title>
+    <title>Sửa sản phẩm</title>
 </head>
 
 <body>
@@ -41,82 +41,67 @@
     <div class="content">
 
         <div class="content-header">
-            <h1>Thông tin tài khoản</h1>
+            <h1>Sửa sản phẩm</h1>
         </div>
 
         <div class="content-information">
-            <form th:action="@{/admin/chinh-sua-thong-tin/{maTaiKhoan}(maTaiKhoan=${taikhoan.maTaiKhoan})}"
-                th:object="${taikhoan}" method="post" id="information">
+            <form
+                th:action="@{/admin/danh-sach-san-pham/chinh-sua/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
+                id="information" th:object="${sanpham}" method="post">
                 <div class="information-section">
                     <div>
-                        <p>ID</p>
+                        <p>Mã sản phẩm</p>
                     </div>
-                    <div><input type="text" th:field="*{maTaiKhoan}" class="information-section-input"
-                            readonly="readonly"></div>
+                    <div><input type="text" th:field="*{maSanPham}" class="information-section-input" readonly="readonly"></div>
                 </div>
 
                 <div class="information-section">
                     <div>
-                        <p>Tên tài khoản</p>
+                        <p>Tên sản phẩm</p>
                     </div>
-                    <div><input type="text" th:field="*{tenTaiKhoan}" class="information-section-input"
-                            readonly="readonly"></div>
+                    <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>
                 </div>
 
                 <div class="information-section">
                     <div>
-                        <p>Họ và tên</p>
-                    </div>
-                    <div><input type="text" th:field="*{hoTen}" class="information-section-input">
-                    </div>
-                </div>
-
-                <div class="information-section">
-                    <div>
-                        <p>Căn cước công dân</p>
-                    </div>
-                    <div><input type="text" th:field="*{cccd}" class="information-section-input">
-                    </div>
-                </div>
-
-                <div class="information-section">
-                    <div>
-                        <p>Quê quán</p>
-                    </div>
-                    <div><input type="text" th:field="*{queQuan}" class="information-section-input">
-                    </div>
-                </div>
-
-                <div class="information-section">
-                    <div>
-                        <p>Số điện thoại</p>
-                    </div>
-                    <div><input type="text" th:field="*{soDienThoai}" class="information-section-input"></div>
-                </div>
-
-                <div class="information-section">
-                    <div>
-                        <p>Ngày sinh</p>
-                    </div>
-                    <div><input type="date" th:field="*{ngaySinh}" class="information-section-input"></div>
-                </div>
-
-                <div class="information-section">
-                    <div>
-                        <p>Chức vụ</p>
+                        <p>Loại sản phẩm</p>
                     </div>
                     <div>
-                        <select name="chucVu" th:field="*{chucVu}" class="information-section-input">
+                        <select name="chucVu" th:field="*{loaiSanPham}" class="information-section-input">
                             <option value="">Lựa chọn chức vụ</option>
-                            <option value="Admin">Admin</option>
-                            <option value="Khách hàng">Khách hàng</option>
-                            <option value="Kế toán">Kế toán</option>
+                            <option value="Lốp">Lốp</option>
+                            <option value="Dầu">Dầu</option>
+                            <option value="Ắc quy">Ắc quy</option>
+                            <option value="Phụ tùng">Phụ tùng</option>
                         </select>
                     </div>
+                    <!-- <div><input type="text" th:field="*{loaiSanPham}" class="information-section-input"></div> -->
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Thông tin</p>
+                    </div>
+                    <div><input type="text" th:field="*{thongTinSanPham}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Giá nhập</p>
+                    </div>
+                    <div><input type="text" th:field="*{giaNhap}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Giá xuất</p>
+                    </div>
+                    <div><input type="text" th:field="*{giaXuat}" class="information-section-input"></div>
                 </div>
 
                 <div class="submit-button">
-                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <!-- <a href="./ad_dstk.html" class="btn btn-primary">Lưu</a> -->
+                    <button type="submit" class="btn btn-primary">Xác nhận</button>
                 </div>
             </form>
         </div>

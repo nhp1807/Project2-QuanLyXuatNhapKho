@@ -31,6 +31,7 @@ import com.example.QuanLyNhapXuatKho.service.NhapKhoService;
 import com.example.QuanLyNhapXuatKho.service.SanPhamService;
 import com.example.QuanLyNhapXuatKho.service.TaiKhoanService;
 import com.example.QuanLyNhapXuatKho.service.XuatKhoService;
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 
 import jakarta.validation.Valid;
 
@@ -98,6 +99,7 @@ public class AppController {
         taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
         taiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
         taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        taiKhoan.setDiemThuong(0);
         taiKhoan.setChucVu("Khách hàng");
         taiKhoan.setRole(Role.KHACHHANG);
 
@@ -124,7 +126,7 @@ public class AppController {
      * Hiển thị danh sách tài khoản cho admin
      */
     @GetMapping("/admin/danh-sach-tai-khoan")
-    public String showDanhSachTaiKhoan(Model model) {
+    public String showDanhSachTaiKhoanAdmin(Model model) {
         List<TaiKhoan> listTaiKhoan = taiKhoanService.getAllTaiKhoan();
         model.addAttribute("listTaiKhoan", listTaiKhoan);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -132,29 +134,6 @@ public class AppController {
 
         return "ad_dstk";
     }
-
-    /*
-     * Hiển thị thông tin cá nhân của admin
-     */
-    // @GetMapping("admin/thong-tin-ca-nhan/{maTaiKhoan}")
-    // public String updateThongTinCaNhanAdmin(@PathVariable Long maTaiKhoan,
-    // @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
-    // TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
-
-    // existingTaiKhoan.setMaTaiKhoan(maTaiKhoan);
-    // existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
-    // existingTaiKhoan.setCccd(taiKhoan.getCccd());
-    // existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
-    // existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
-    // existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
-    // existingTaiKhoan.setChucVu(taiKhoan.getChucVu());
-
-    // taiKhoanService.updateTaiKhoan(existingTaiKhoan);
-
-    // String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-    // model.addAttribute("currentAccount", getLastName(currentName));
-    // return "redirect:/admin/danh-sach-tai-khoan";
-    // }
 
     /*
      * Hiển thị giao diện đổi mật khẩu cho admin
@@ -192,7 +171,7 @@ public class AppController {
      * Xóa tài khoản cho admin
      */
     @GetMapping("/admin/danh-sach-tai-khoan/xoa/{maTaiKhoan}")
-    public String deleteTaiKhoan(@PathVariable Long maTaiKhoan) {
+    public String deleteTaiKhoanAdmin(@PathVariable Long maTaiKhoan) {
         taiKhoanService.deleteTaiKhoan(maTaiKhoan);
 
         return "redirect:/admin/danh-sach-tai-khoan";
@@ -202,7 +181,7 @@ public class AppController {
      * Hiển thị giao diện thêm tài khoản cho admin
      */
     @GetMapping("/admin/them-tai-khoan")
-    public String showThemTaiKhoanPage(Model model) {
+    public String showAddTaiKhoanAdmin(Model model) {
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
         model.addAttribute("taikhoan", new TaiKhoan());
@@ -213,7 +192,7 @@ public class AppController {
      * Xử lý thêm tài khoản
      */
     @PostMapping("/admin/them-tai-khoan")
-    public String saveTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
+    public String addTaiKhoanAdmin(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
         if (taiKhoan.getChucVu().equals("Admin")) {
             taiKhoan.setRole(Role.ADMIN);
         } else if (taiKhoan.getChucVu().equals("Khách hàng")) {
@@ -233,7 +212,7 @@ public class AppController {
      * Hiển thị giao diện chỉnh sửa thông tin
      */
     @GetMapping("/admin/chinh-sua-thong-tin")
-    public String showEditThongTinTaiKhoanAdmin(Model model) {
+    public String showUpdateTaiKhoanAdmin(Model model) {
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -273,7 +252,7 @@ public class AppController {
      * Hiển thị sửa thông tin khách hàng
      */
     @GetMapping("/admin/danh-sach-tai-khoan/{maTaiKhoan}")
-    public String showEditThongTinKhachHang(@PathVariable Long maTaiKhoan, Model model) {
+    public String showUpdateTaiKhoanKhachHangAdmin(@PathVariable Long maTaiKhoan, Model model) {
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(maTaiKhoan));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -285,7 +264,8 @@ public class AppController {
      * Xử lý sửa thông tin khách hàng
      */
     @PostMapping("/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}")
-    public String editTaiKhoanKhachHang(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
+    public String updateTaiKhoanKhachHangAdmin(@PathVariable Long maTaiKhoan,
+            @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
             Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
@@ -314,7 +294,7 @@ public class AppController {
      * Hiển thị danh sách các nhà cung cấp cho admin
      */
     @GetMapping("/admin/danh-sach-nha-cung-cap")
-    public String showDanhSachNhaCungCapAdmin(Model model){
+    public String showDanhSachNhaCungCapAdmin(Model model) {
         model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -325,7 +305,7 @@ public class AppController {
      * Hiển thị giao diện thêm nhà cung cấp
      */
     @GetMapping("/admin/them-nha-cung-cap")
-    public String showThemNhaCungCapPageAdmin(Model model){
+    public String showAddNhaCungCapAdmin(Model model) {
         model.addAttribute("nhacungcap", new NhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -335,8 +315,8 @@ public class AppController {
     /*
      * Xử lý thêm nhà cung cấp
      */
-    @PostMapping("admin/them-nha-cung-cap")
-    public String addNhaCungCapAdmin(@ModelAttribute("nhacungcap") NhaCungCap nhaCungCap){
+    @PostMapping("/admin/them-nha-cung-cap")
+    public String addNhaCungCapAdmin(@ModelAttribute("nhacungcap") NhaCungCap nhaCungCap) {
         nhaCungCapService.saveNhaCungCap(nhaCungCap);
         return "redirect:/admin/danh-sach-nha-cung-cap";
     }
@@ -345,7 +325,7 @@ public class AppController {
      * Xóa nhà cung cấp
      */
     @GetMapping("/admin/danh-sach-nha-cung-cap/xoa/{maNhaCungCap}")
-    public String deleteNhaCungCapAdmin(@PathVariable Long maNhaCungCap){
+    public String deleteNhaCungCapAdmin(@PathVariable Long maNhaCungCap) {
         nhaCungCapService.deleteNhaCungCap(maNhaCungCap);
         return "redirect:/admin/danh-sach-nha-cung-cap";
     }
@@ -354,15 +334,19 @@ public class AppController {
      * Hiển thị sửa nhà cung cấp cho admin
      */
     @GetMapping("/admin/danh-sach-nha-cung-cap/{maNhaCungCap}")
-    public String showEditNhaCungCap(Model model, @PathVariable Long maNhaCungCap){
+    public String showUpdateNhaCungCapAdmin(Model model, @PathVariable Long maNhaCungCap) {
         model.addAttribute("nhacungcap", nhaCungCapService.getNhaCungCap(maNhaCungCap));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
         return "ad_sua_nha_cung_cap";
     }
 
+    /*
+     * Xử lý chính chỉnh sửa nhà cung cấp
+     */
     @PostMapping("/admin/danh-sach-nha-cung-cap/chinh-sua/{maNhaCungCap}")
-    public String editNhaCungCap(@PathVariable Long maNhaCungCap, @ModelAttribute("nhacungcap") NhaCungCap nhaCungCap){
+    public String updateNhaCungCapAdmin(@PathVariable Long maNhaCungCap,
+            @ModelAttribute("nhacungcap") NhaCungCap nhaCungCap) {
         NhaCungCap existingNhaCungCap = nhaCungCapService.getNhaCungCap(maNhaCungCap);
         existingNhaCungCap.setMaNhaCungCap(nhaCungCap.getMaNhaCungCap());
         existingNhaCungCap.setTenNhaCungCap(nhaCungCap.getTenNhaCungCap());
@@ -371,11 +355,84 @@ public class AppController {
         existingNhaCungCap.setSoDienThoai(nhaCungCap.getSoDienThoai());
 
         nhaCungCapService.updateNhaCungCap(existingNhaCungCap);
-        
+
         return "redirect:/admin/danh-sach-nha-cung-cap";
     }
-        
-    
+
+    /*
+     * Hiển thị danh sách sản phẩm cho admin
+     */
+    @GetMapping("/admin/danh-sach-san-pham")
+    public String showDanhSachSanPhamAdmin(Model model) {
+        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        model.addAttribute("listSanPham", listSanPham);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "ad_danh_sach_sp";
+    }
+
+    /*
+     * Hiển thị thêm sản phẩm
+     */
+    @GetMapping("/admin/them-san-pham")
+    public String showAddSanPhamAdmin(Model model) {
+        model.addAttribute("sanpham", new SanPham());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "ad_them_sp";
+    }
+
+    /*
+     * Xử lý thêm sản phẩm
+     */
+    @PostMapping("/admin/them-san-pham")
+    public String addSanPhamAdmin(@ModelAttribute("sanpham") SanPham sanPham) {
+        sanPhamService.saveSanPham(sanPham);
+
+        return "redirect:/admin/danh-sach-san-pham";
+    }
+
+    /*
+     * Xử lý xóa sản phẩm
+     */
+    @GetMapping("/admin/danh-sach-san-pham/xoa/{maSanPham}")
+    public String deleteSanPhamAdmin(@PathVariable Long maSanPham) {
+        sanPhamService.deleteSanPham(maSanPham);
+
+        return "redirect:/admin/danh-sach-san-pham";
+    }
+
+    /*
+     * Hiển thị chỉnh sửa sản phẩm
+     */
+    @GetMapping("/admin/danh-sach-san-pham/{maSanPham}")
+    public String showUpdateSanPhamAdmin(Model model, @PathVariable Long maSanPham) {
+        model.addAttribute("sanpham", sanPhamService.getSanPham(maSanPham));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "ad_chinh_sua_sp";
+    }
+
+    /*
+     * Xử lý chỉnh sửa sản phẩm
+     */
+    @PostMapping("/admin/danh-sach-san-pham/chinh-sua/{maSanPham}")
+    public String updateSanPhamAdmin(@PathVariable Long maSanPham, @ModelAttribute("sanpham") SanPham sanPham) {
+        SanPham existingSanPham = sanPhamService.getSanPham(maSanPham);
+        existingSanPham.setMaSanPham(maSanPham);
+        existingSanPham.setTenSanPham(sanPham.getTenSanPham());
+        existingSanPham.setLoaiSanPham(sanPham.getLoaiSanPham());
+        existingSanPham.setThongTinSanPham(sanPham.getThongTinSanPham());
+        existingSanPham.setGiaNhap(sanPham.getGiaNhap());
+        existingSanPham.setGiaXuat(sanPham.getGiaXuat());
+
+        sanPhamService.updateSanPham(existingSanPham);
+
+        return "redirect:/admin/danh-sach-san-pham";
+    }
+
     // -----------------------------Khách hàng-------------------------------
     @GetMapping("/khach-hang/trang-chu")
     public String showTrangChuKhachHang() {
@@ -385,7 +442,7 @@ public class AppController {
     // ------------------------------Kế toán---------------------------------
 
     @GetMapping("ke-toan/trang-chu")
-    public String showTrangChuKeToan(Principal principal, Model model){
+    public String showTrangChuKeToan(Principal principal, Model model) {
         String tenDangNhap = principal.getName();
         idDangNhap = taiKhoanRepository.findByTenTaiKhoan(tenDangNhap).getMaTaiKhoan();
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -393,6 +450,7 @@ public class AppController {
         model.addAttribute("currentAccount", getLastName(currentName));
         return "kt_trang_chu";
     }
+
     // ---------------------------Chức năng phụ------------------------------
     public String getLastName(String name) {
         String[] names = name.split(" ");

@@ -42,12 +42,14 @@ public class TaiKhoan {
     @Column
     private String ngayVaoLam;
     @Column
+    private int diemThuong;
+    @Column
     private String chucVu;
     @Column
     private Role role;
 
     public TaiKhoan(String tenTaiKhoan, String matKhau, String reMatKhau, String hoTen, String cccd, String soDienThoai,
-            Long luong, String queQuan, String ngaySinh, String ngayVaoLam, String chucVu, Role role) {
+            Long luong, String queQuan, String ngaySinh, String ngayVaoLam, int diemThuong, String chucVu, Role role) {
         this.tenTaiKhoan = tenTaiKhoan;
         this.matKhau = matKhau;
         this.reMatKhau = reMatKhau;
@@ -58,6 +60,7 @@ public class TaiKhoan {
         this.queQuan = queQuan;
         this.ngaySinh = ngaySinh;
         this.ngayVaoLam = ngayVaoLam;
+        this.diemThuong = diemThuong;
         this.chucVu = chucVu;
         this.role = role;
     }
