@@ -18,26 +18,23 @@
 <body>
     <div class="sidebar">
         <div class="information">
-            <img src="/image/logo.jpg" width="10%" alt="">
+          <img src="/image/logo.jpg" width="10%" alt="">
         </div>
         <h2>Welcome, <a href="" th:text="${currentAccount}"></a></h2>
         <div>
-            <div class="header-nav"><span class="material-symbols-outlined">home</span><a th:href="@{/admin/trang-chu}">Trang
-                chủ</a></div>
-            <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
-                th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
-            <div class="header-nav"><span class="material-symbols-outlined">info</span><a
-                th:href="@{/admin/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
-            <div class="header-nav"><span class="material-symbols-outlined">password</span><a
-                th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
-            <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
-                th:href="@{/admin/danh-sach-san-pham}">Danh sách sản phẩm</a></div>
-            <div class="header-nav"><span class="material-symbols-outlined">apartment</span><a
-                th:href="@{/admin/danh-sach-nha-cung-cap}">Nhà cung cấp</a></div>
-            <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a>
-            </div>
+          <div class="header-nav"><span class="material-symbols-outlined">home</span><a
+              th:href="@{/khach-hang/trang-chu}">Trang
+              chủ</a></div>
+          <div class="header-nav"><span class="material-symbols-outlined">info</span><a
+              th:href="@{/khach-hang/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
+          <div class="header-nav"><span class="material-symbols-outlined">password</span><a
+              th:href="@{/khach-hang/doi-mat-khau}">Đổi mật khẩu</a></div>
+          <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
+              th:href="@{/khach-hang/danh-sach-san-pham}">Danh sách sản phẩm</a></div>
+          <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a>
           </div>
-    </div>
+        </div>
+      </div>
 
     <div class="content">
 
@@ -46,7 +43,7 @@
         </div>
 
         <div class="content-information">
-            <form th:action="@{/admin/doi-mat-khau}" method="post" th:object="${taikhoan}" id="information">
+            <form th:action="@{/khach-hang/doi-mat-khau}" method="post" th:object="${taikhoan}" id="information">
                 <div class="information-section">
                     <div>
                         <p>Mật khẩu mới</p>
@@ -65,7 +62,7 @@
                     <button type="submit" class="btn btn-primary">Lưu</a>
                 </div>
 
-                <div style="color: red;" th:text="${errPassword}"></div>
+                <div style="color: red;">Mật khẩu không khớp!</div>
             </form>
         </div>
 

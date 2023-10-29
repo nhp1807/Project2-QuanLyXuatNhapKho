@@ -10,4 +10,6 @@ import com.example.QuanLyNhapXuatKho.entity.TaiKhoan;
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     @Query("SELECT tk FROM TaiKhoan tk WHERE tk.tenTaiKhoan=?1")
     public TaiKhoan findByTenTaiKhoan(String tenTaiKhoan);
+
+    boolean existsByTenTaiKhoan(String TenTaiKhoan);
 }

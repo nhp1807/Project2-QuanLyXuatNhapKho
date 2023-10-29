@@ -67,9 +67,10 @@ public class AppController {
     private TaiKhoanService taiKhoanService;
 
     public Long idDangNhap;
+    public boolean errPassword = false;
+    public boolean errRegister = false;
 
-    // -------------------------------Đăng nhập và đăng
-    // ký---------------------------------------
+    // -------------------------------Đăng nhập và đăng ký---------------------------------------
 
     /*
      * Hiển thị giao diện login
@@ -84,6 +85,9 @@ public class AppController {
      */
     @GetMapping("/register")
     public String showRegisterPage(Model model) {
+        if(errPassword == true){
+            model.addAttribute("errRegister", "Tên đăng nhập đã tồn tại");
+        }
         model.addAttribute("taikhoan", new TaiKhoan());
 
         return "register";
@@ -94,6 +98,12 @@ public class AppController {
      */
     @PostMapping("/process_register")
     public String processRegister(TaiKhoan taiKhoan) {
+        if(taiKhoanRepository.existsByTenTaiKhoan(taiKhoan.getTenTaiKhoan())){
+            errRegister = true;
+            return "redirect:/register";
+        }
+
+        errRegister = false;
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         taiKhoan.setHoTen(taiKhoan.getHoTen());
         taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
@@ -140,6 +150,9 @@ public class AppController {
      */
     @GetMapping("/admin/doi-mat-khau")
     public String showDoiMatKhauAdmin(Model model) {
+        if(errPassword == true){
+            model.addAttribute("errPassword", "Mật khẩu không khớp");
+        }
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -154,8 +167,11 @@ public class AppController {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(idDangNhap);
 
         if (!taiKhoan.getMatKhau().equals(taiKhoan.getReMatKhau())) {
+            errPassword = true;
             return "redirect:/admin/doi-mat-khau";
         }
+
+        errPassword = false;
 
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -434,9 +450,80 @@ public class AppController {
     }
 
     // -----------------------------Khách hàng-------------------------------
+    /*
+     * Hiển thị trang chủ khách hàng
+     */
     @GetMapping("/khach-hang/trang-chu")
-    public String showTrangChuKhachHang() {
+    public String showTrangChuKhachHang(Principal principal, Model model) {
+        String tenDangNhap = principal.getName();
+        idDangNhap = taiKhoanRepository.findByTenTaiKhoan(tenDangNhap).getMaTaiKhoan();
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+
+        model.addAttribute("currentAccount", getLastName(currentName));
         return "kh_trang_chu";
+    }
+
+    /*
+     * Hiển thị giao diện đổi mật khẩu cho khách hàng
+     */
+    @GetMapping("/khach-hang/doi-mat-khau")
+    public String showDoiMatKhauKH(Model model) {
+        if(errPassword == true){
+            model.addAttribute("errPassword", "Mật khẩu không khớp");
+        }
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_doi_mat_khau";
+    }
+
+    /*
+     * Xử lý đổi mật khẩu
+     */
+    @PostMapping("/khach-hang/doi-mat-khau")
+    public String updateMatKhauKH(Model model, Principal principal, @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(idDangNhap);
+
+        if (!taiKhoan.getMatKhau().equals(taiKhoan.getReMatKhau())) {
+            errPassword = true;
+            return "redirect:/khach-hang/doi-mat-khau";
+        }
+
+        errPassword = false;
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        existingTaiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        existingTaiKhoan.setReMatKhau(existingTaiKhoan.getMatKhau());
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+
+        return "redirect:/khach-hang/trang-chu";
+    }
+
+    @GetMapping("/khach-hang/chinh-sua-thong-tin")
+    public String showUpdateTaiKhoanKH(Model model){
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kh_chinh_sua_thong_tin.html";
+    }
+
+    @PostMapping("/khach-hang/chinh-sua-thong-tin/{maTaiKhoan}")
+    public String updateTaiKhoanKH(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan, Model model){
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
+
+        existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
+        existingTaiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
+        existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
+        existingTaiKhoan.setCccd(taiKhoan.getCccd());
+        existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
+        existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
+        existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+
+        return "redirect:/khach-hang/trang-chu";
     }
 
     // ------------------------------Kế toán---------------------------------
