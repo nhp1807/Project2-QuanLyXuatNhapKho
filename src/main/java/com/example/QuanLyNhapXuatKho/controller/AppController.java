@@ -526,6 +526,35 @@ public class AppController {
         return "redirect:/khach-hang/trang-chu";
     }
 
+    @GetMapping("/khach-hang/danh-sach-san-pham")
+    public String showDanhSachSanPhamKH(Model model){
+        List<SanPham> listLop = new ArrayList<>();
+        List<SanPham> listDau = new ArrayList<>();
+        List<SanPham> listAcQuy = new ArrayList<>();
+        List<SanPham> listPhuTung = new ArrayList<>();
+
+
+        for (SanPham sanPham : sanPhamService.getAllSanPham()) {
+            if(sanPham.getLoaiSanPham().equals("Lốp")){
+                listLop.add(sanPham);
+            } else if(sanPham.getLoaiSanPham().equals("Dầu")){
+                listDau.add(sanPham);
+            } else if(sanPham.getLoaiSanPham().equals("Ắc quy")){
+                listAcQuy.add(sanPham);
+            } else {
+                listPhuTung.add(sanPham);
+            }
+        }
+
+        model.addAttribute("listLop", listLop);        model.addAttribute("listLop", listLop);
+        model.addAttribute("listDau", listDau);
+        model.addAttribute("listAcQuy", listAcQuy);
+        model.addAttribute("listPhuTung", listPhuTung);
+
+
+        return "kh_danh_sach_sp";
+    }
+
     // ------------------------------Kế toán---------------------------------
 
     @GetMapping("ke-toan/trang-chu")
