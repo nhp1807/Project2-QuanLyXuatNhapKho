@@ -11,5 +11,8 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     @Query("SELECT tk FROM TaiKhoan tk WHERE tk.tenTaiKhoan=?1")
     public TaiKhoan findByTenTaiKhoan(String tenTaiKhoan);
 
+    @Query("SELECT tk FROM TaiKhoan tk WHERE tk.chucVu=?1")
+    public TaiKhoan findByChucVu(String chucVu);
+
     boolean existsByTenTaiKhoan(String TenTaiKhoan);
 }

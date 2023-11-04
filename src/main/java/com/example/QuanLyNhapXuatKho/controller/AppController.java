@@ -557,7 +557,7 @@ public class AppController {
 
     // ------------------------------Kế toán---------------------------------
 
-    @GetMapping("ke-toan/trang-chu")
+    @GetMapping("/ke-toan/trang-chu")
     public String showTrangChuKeToan(Principal principal, Model model) {
         String tenDangNhap = principal.getName();
         idDangNhap = taiKhoanRepository.findByTenTaiKhoan(tenDangNhap).getMaTaiKhoan();
@@ -565,6 +565,50 @@ public class AppController {
 
         model.addAttribute("currentAccount", getLastName(currentName));
         return "kt_trang_chu";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-tai-khoan")
+    public String showDanhSachTaiKhoanKT(Model model){
+        List<TaiKhoan> listTaiKhoan = taiKhoanService.getAllTaiKhoan();
+        List<TaiKhoan> listKhachHang = new ArrayList<>();
+        for (TaiKhoan tk : listTaiKhoan) {
+            if(tk.getRole() == Role.KHACHHANG){
+                listKhachHang.add(tk);
+            }
+        }
+        model.addAttribute("listKhachHang", listKhachHang);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        
+        return "kt_dstk";
+    }
+
+    @GetMapping("/ke-toan/them-tai-khoan")
+    public String showAddTaiKhoanKT(Model model){
+        model.addAttribute("taikhoan", new TaiKhoan());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_them_tai_khoan";
+    }
+
+    @PostMapping("/ke-toan/them-tai-khoan")
+    public String addTaiKhoanKT(@Valid @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
+        taiKhoan.setChucVu("Khách hàng");
+        taiKhoan.setRole(Role.KHACHHANG);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        taiKhoan.setMatKhau(passwordEncoder.encode("admin"));
+        taiKhoan.setReMatKhau(taiKhoan.getMatKhau());
+        taiKhoanService.saveTaiKhoan(taiKhoan);
+
+        return "redirect:/ke-toan/danh-sach-tai-khoan";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-tai-khoan/xoa/{maTaiKhoan}")
+    public String deleteTaiKhoanKT(@PathVariable Long maTaiKhoan) {
+        taiKhoanService.deleteTaiKhoan(maTaiKhoan);
+
+        return "redirect:/ke-toan/danh-sach-tai-khoan";
     }
 
     // ---------------------------Chức năng phụ------------------------------
