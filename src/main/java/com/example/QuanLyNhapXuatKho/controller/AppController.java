@@ -611,6 +611,73 @@ public class AppController {
         return "redirect:/ke-toan/danh-sach-tai-khoan";
     }
 
+    @GetMapping("/ke-toan/chinh-sua-thong-tin")
+    public String showUpdateTaiKhoanKT(Model model){
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        
+        return "kt_chinh_sua_thong_tin";
+    }
+
+    @PostMapping("/ke-toan/chinh-sua-thong-tin/{maTaiKhoan}")
+    public String updateTaiKhoanKT(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
+            Model model){
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
+
+        existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
+        existingTaiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
+        existingTaiKhoan.setHoTen(taiKhoan.getHoTen());
+        existingTaiKhoan.setCccd(taiKhoan.getCccd());
+        existingTaiKhoan.setQueQuan(taiKhoan.getQueQuan());
+        existingTaiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
+        existingTaiKhoan.setNgaySinh(taiKhoan.getNgaySinh());
+        if (taiKhoan.getChucVu().equals("Admin")) {
+            existingTaiKhoan.setRole(Role.ADMIN);
+        } else if (taiKhoan.getChucVu().equals("Khách hàng")) {
+            existingTaiKhoan.setRole(Role.KHACHHANG);
+        } else {
+            existingTaiKhoan.setRole(Role.KETOAN);
+        }
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+        
+
+        return "redirect:/ke-toan/danh-sach-tai-khoan";
+    }
+
+    @GetMapping("/ke-toan/doi-mat-khau")
+    public String showDoiMatKhauKT(Model model) {
+        if(errPassword == true){
+            model.addAttribute("errPassword", "Mật khẩu không khớp");
+        }
+        model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kt_doi_mat_khau";
+    }
+
+    @PostMapping("/ke-toan/doi-mat-khau")
+    public String updateMatKhauKT(Model model, Principal principal, @ModelAttribute("taikhoan") TaiKhoan taiKhoan) {
+        TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(idDangNhap);
+
+        if (!taiKhoan.getMatKhau().equals(taiKhoan.getReMatKhau())) {
+            errPassword = true;
+            return "redirect:/ke-toan/doi-mat-khau";
+        }
+
+        errPassword = false;
+
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        existingTaiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        existingTaiKhoan.setReMatKhau(existingTaiKhoan.getMatKhau());
+
+        taiKhoanService.updateTaiKhoan(existingTaiKhoan);
+
+        return "redirect:/ke-toan/danh-sach-tai-khoan";
+    }
+
     // ---------------------------Chức năng phụ------------------------------
     public String getLastName(String name) {
         String[] names = name.split(" ");
