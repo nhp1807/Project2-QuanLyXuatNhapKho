@@ -31,7 +31,6 @@ import com.example.QuanLyNhapXuatKho.service.NhapKhoService;
 import com.example.QuanLyNhapXuatKho.service.SanPhamService;
 import com.example.QuanLyNhapXuatKho.service.TaiKhoanService;
 import com.example.QuanLyNhapXuatKho.service.XuatKhoService;
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 
 import jakarta.validation.Valid;
 
