@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import com.example.QuanLyNhapXuatKho.entity.ChiTietNhapKho;
 import com.example.QuanLyNhapXuatKho.entity.NhaCungCap;
+import com.example.QuanLyNhapXuatKho.entity.NhapKho;
 import com.example.QuanLyNhapXuatKho.entity.Role;
 import com.example.QuanLyNhapXuatKho.entity.SanPham;
 import com.example.QuanLyNhapXuatKho.entity.TaiKhoan;
@@ -68,6 +70,7 @@ public class AppController {
     public Long idDangNhap;
     public boolean errPassword = false;
     public boolean errRegister = false;
+    public Long idNhapKho;
 
     // -------------------------------Đăng nhập và đăng ký---------------------------------------
 
@@ -446,6 +449,73 @@ public class AppController {
         sanPhamService.updateSanPham(existingSanPham);
 
         return "redirect:/admin/danh-sach-san-pham";
+    }
+
+    @GetMapping("/admin/danh-sach-nhap-kho")
+    public String showDanhSachNhapKhoAdmin(Model model){
+        List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+        model.addAttribute("listNhapKho", listNhapKho);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "ad_danh_sach_nhap_kho";
+    }
+
+    @GetMapping("/admin/them-nhap-kho")
+    public String showAddNhapKho(Model model){
+        model.addAttribute("nhapkho", new NhapKho());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        
+        return "ad_them_nhap_kho";
+    }
+
+    @PostMapping("/admin/them-nhap-kho")
+    public String addNhapKho(@ModelAttribute("nhapkho") NhapKho nhapKho){
+        nhapKho.setMaNhanVien(idDangNhap);
+        nhapKho.setMaNhaCungCap(nhapKho.getMaNhaCungCap());
+        nhapKho.setNgayNhap(nhapKho.getNgayNhap());
+        nhapKho.setTongSoTien(0L);
+
+        nhapKhoService.saveNhapKho(nhapKho);
+
+        return "redirect:/admin/danh-sach-nhap-kho";
+    }
+
+    @GetMapping("/admin/danh-sach-nhap-kho/xoa/{maNhapKho}")
+    public String deleteNhapKho(@PathVariable Long maNhapKho){
+        nhapKhoService.deleteNhapKho(maNhapKho);
+
+        return "redirect:/admin/danh-sach-nhap-kho";
+    }
+
+    @GetMapping("/admin/danh-sach-nhap-kho/chi-tiet/{maNhapKho}")
+    public String showDetailNhapKhoAdmin(@PathVariable Long maNhapKho, Model model){
+        List<ChiTietNhapKho> listChiTiet = chiTietNhapKhoRepository.findByMaNhapKho(maNhapKho);
+        model.addAttribute("listChiTiet", listChiTiet);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        
+        return "ad_chi_tiet_nhap_kho";
+    }
+
+    @GetMapping("/admin/danh-sach-nhap-kho/them-san-pham/{maNhapKho}")
+    public String showAddChiTietNhapKhoAdmin(@PathVariable Long maNhapKho, Model model){
+        idNhapKho = maNhapKho;
+        model.addAttribute("sanpham", new SanPham());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "ad_them_chi_tiet_nhap_kho";
+    }
+
+    @PostMapping("/admin/danh-sach-nhap-kho/them-san-pham")
+    public String addSanPham(@ModelAttribute("sanpham") SanPham sanPham){
+        sanPhamService.saveSanPham(sanPham);
+        ChiTietNhapKho chiTietNhapKho = new ChiTietNhapKho();
+        chiTietNhapKho.setMaNhapKho(idNhapKho);
+        chiTietNhapKho.setMaSanPham(sanPham.getMaSanPham());
+
+        return "redirect:/admin/danh-sach-nhap-kho";
     }
 
     // -----------------------------Khách hàng-------------------------------
