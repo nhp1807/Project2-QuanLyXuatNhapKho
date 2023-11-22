@@ -19,6 +19,8 @@ public class SanPham {
     @Column
     private String tenSanPham;
     @Column
+    private String hangSanPham;
+    @Column
     private String loaiSanPham;
     @Column
     private String thongTinSanPham;
@@ -27,15 +29,19 @@ public class SanPham {
     @Column
     private Long giaXuat;
     @Column
+    private int soLuong;
+    @Column
     private int soLuongTrongKho;
 
-    public SanPham(String tenSanPham, String loaiSanPham, String thongTinSanPham, Long giaNhap, Long giaXuat,
-            int soLuongTrongKho) {
+    public SanPham(String tenSanPham, String hangSanPham, String loaiSanPham, String thongTinSanPham, Long giaNhap, Long giaXuat,
+            int soLuong, int soLuongTrongKho) {
         this.tenSanPham = tenSanPham;
+        this.hangSanPham = hangSanPham;
         this.loaiSanPham = loaiSanPham;
         this.thongTinSanPham = thongTinSanPham;
         this.giaNhap = giaNhap;
         this.giaXuat = giaXuat;
+        this.soLuong = soLuong;
         this.soLuongTrongKho = soLuongTrongKho;
     }
 

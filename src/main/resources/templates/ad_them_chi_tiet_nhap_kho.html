@@ -51,19 +51,54 @@
         </div>
 
         <div class="content-information">
-            <form th:action="@{/admin/danh-sach-nhap-kho/them-san-pham/}" id="information" th:object="${sanpham}" method="post">
+            <form th:action="@{/admin/danh-sach-nhap-kho/them-san-pham}" id="information" th:object="${sanpham}" method="post">
                 <div class="information-section">
                     <div>
-                        <p>Mã nhà cung cấp</p>
+                        <p>Tên sản phẩm</p>
                     </div>
-                    <div><input type="text" th:field="*{maNhaCungCap}" class="information-section-input"></div>
+                    <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>
                 </div>
 
                 <div class="information-section">
                     <div>
-                        <p>Ngày nhập</p>
+                        <p>Hãng sản phẩm</p>
                     </div>
-                    <div><input type="date" th:field="*{ngayNhap}" class="information-section-input"></div>
+                    <div><input type="text" th:field="*{hangSanPham}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Loại sản phẩm</p>
+                    </div>
+                    <div><input type="text" th:field="*{loaiSanPham}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Thông tin sản phẩm</p>
+                    </div>
+                    <div><input type="text" th:field="*{thongTinSanPham}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Số lượng</p>
+                    </div>
+                    <div><input type="number" th:field="*{soLuong}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Giá nhập</p>
+                    </div>
+                    <div><input type="text" th:field="*{giaNhap}" class="information-section-input"></div>
+                </div>
+
+                <div class="information-section">
+                    <div>
+                        <p>Giá xuất</p>
+                    </div>
+                    <div><input type="text" th:field="*{giaXuat}" class="information-section-input"></div>
                 </div>
 
                 <div class="submit-button">

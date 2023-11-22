@@ -13,4 +13,7 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
 
     @Query("SELECT sp FROM SanPham sp WHERE sp.loaiSanPham=?1")
     public SanPham findByLoaiSanPham(String loaiSanPham);
+
+    @Query("SELECT sp FROM SanPham sp WHERE sp.tenSanPham=?1 AND sp.hangSanPham=?2")
+    public SanPham ifSanPhamExisted(String tenSanPham, String hangSanPham);
 }
