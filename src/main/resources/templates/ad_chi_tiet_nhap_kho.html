@@ -67,7 +67,7 @@
                 <th class="align-middle col-1 text-center" th:text="${chitiet.soLuong}"></th>
                 <th class="align-middle col-3 text-center" th:text="${chitiet.donGia}"></th>
                 <th class="text-center col-2">
-                  <a th:href="@{/admin/danh-sach-nhap-kho/chi-tiet/sua{maChiTiet}(maChiTiet=${chitiet.id})}"
+                  <a th:href="@{/admin/danh-sach-nhap-kho/chi-tiet/sua/{maChiTiet}(maChiTiet=${chitiet.id})}"
                     class="btn btn-primary">Sửa</a>
                   <a th:href="@{/admin/danh-sach-nhap-kho/chi-tiet/xoa/{maChiTiet}(maChiTiet=${chitiet.id})}"
                     class="btn btn-danger">Xóa</a>

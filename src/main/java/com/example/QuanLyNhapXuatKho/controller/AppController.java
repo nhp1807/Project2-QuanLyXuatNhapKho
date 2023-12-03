@@ -487,6 +487,9 @@ public class AppController {
         nhapKhoService.deleteNhapKho(maNhapKho);
         List<ChiTietNhapKho> chiTietNhapKhos = chiTietNhapKhoRepository.findByMaNhapKho(maNhapKho);
         for (ChiTietNhapKho c : chiTietNhapKhos) {
+            SanPham sp = sanPhamService.getSanPham(c.getMaSanPham());
+            sp.setSoLuongTrongKho(sp.getSoLuongTrongKho() - c.getSoLuong());
+            sanPhamService.saveSanPham(sp);
             chiTietNhapKhoRepository.delete(c);
         }
 
@@ -530,7 +533,7 @@ public class AppController {
     }
 
     @PostMapping("/admin/danh-sach-nhap-kho/them-san-pham")
-    public String addSanPham(@ModelAttribute("sanpham") SanPham sanPham) {
+    public String addChiTietNhapKhoAdmin(@ModelAttribute("sanpham") SanPham sanPham) {
         SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(sanPham.getTenSanPham(), sanPham.getHangSanPham());
         if (existedSanPham == null) {
             sanPham.setSoLuongTrongKho(sanPham.getSoLuong());
@@ -545,8 +548,18 @@ public class AppController {
             chiTietNhapKhoService.saveChiTietNhapKho(newchiTietNhapKho);
         } else {
             existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() + sanPham.getSoLuong());
-            existedSanPham.setGiaNhap(sanPham.getGiaNhap());
-            existedSanPham.setGiaXuat(sanPham.getGiaXuat());
+            // Nếu giá nhập và giá xuất lớn hơn sản phẩm đã tồn tại thì mới thay đổi
+            if(sanPham.getGiaNhap() > existedSanPham.getGiaNhap()){
+                existedSanPham.setGiaNhap(sanPham.getGiaNhap());
+            }else{
+                existedSanPham.setGiaNhap(existedSanPham.getGiaNhap());
+            }
+            if(sanPham.getGiaXuat() > existedSanPham.getGiaXuat()){
+                existedSanPham.setGiaXuat(sanPham.getGiaXuat());
+            }else {
+                existedSanPham.setGiaXuat(existedSanPham.getGiaXuat());
+            }
+
             sanPhamService.updateSanPham(existedSanPham);
             ChiTietNhapKho chiTietNhapKho = chiTietNhapKhoRepository.ifChiTietExistedSanPham(sanPham.getMaSanPham());
             if (chiTietNhapKho == null) {
@@ -572,6 +585,9 @@ public class AppController {
             sum += c.getDonGia() * c.getSoLuong();
         }
         nhapKho.setTongSoTien(sum);
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() + sanPham.getGiaNhap() * sanPham.getSoLuong());
+        taiKhoanService.saveTaiKhoan(tkAdmin);
         nhapKhoService.saveNhapKho(nhapKho);
 
         return "redirect:/admin/danh-sach-nhap-kho";
