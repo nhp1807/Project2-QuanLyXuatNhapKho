@@ -2,16 +2,15 @@ package com.example.QuanLyNhapXuatKho.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.QuanLyNhapXuatKho.entity.ChiTietNhapKho;
 import com.example.QuanLyNhapXuatKho.entity.NhaCungCap;
@@ -384,6 +383,7 @@ public class AppController {
     @GetMapping("/admin/danh-sach-san-pham")
     public String showDanhSachSanPhamAdmin(Model model) {
         List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
         model.addAttribute("listSanPham", listSanPham);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -407,6 +407,11 @@ public class AppController {
      */
     @PostMapping("/admin/them-san-pham")
     public String addSanPhamAdmin(@ModelAttribute("sanpham") SanPham sanPham) {
+        sanPham.setThongTinSanPham("");
+        sanPham.setGiaNhap(0L);
+        sanPham.setGiaXuat(0L);
+        sanPham.setSoLuongTrongKho(0);
+        sanPham.setSoLuong(0);
         sanPhamService.saveSanPham(sanPham);
 
         return "redirect:/admin/danh-sach-san-pham";
@@ -456,6 +461,7 @@ public class AppController {
     public String showDanhSachNhapKhoAdmin(Model model) {
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
         model.addAttribute("listNhapKho", listNhapKho);
+//        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
         return "ad_danh_sach_nhap_kho";
@@ -464,6 +470,7 @@ public class AppController {
     @GetMapping("/admin/them-nhap-kho")
     public String showAddNhapKho(Model model) {
         model.addAttribute("nhapkho", new NhapKho());
+        model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
 
@@ -471,8 +478,9 @@ public class AppController {
     }
 
     @PostMapping("/admin/them-nhap-kho")
-    public String addNhapKho(@ModelAttribute("nhapkho") NhapKho nhapKho) {
+    public String addNhapKho(@ModelAttribute("nhapkho") NhapKho nhapKho, @RequestParam("selectedObject") Long maNhaCungCap) {
         nhapKho.setMaNhanVien(idDangNhap);
+        nhapKho.setMaNhaCungCap(maNhaCungCap);
         nhapKho.setMaNhaCungCap(nhapKho.getMaNhaCungCap());
         nhapKho.setNgayNhap(nhapKho.getNgayNhap());
         nhapKho.setTongSoTien(0L);
@@ -484,6 +492,8 @@ public class AppController {
 
     @GetMapping("/admin/danh-sach-nhap-kho/xoa/{maNhapKho}")
     public String deleteNhapKho(@PathVariable Long maNhapKho) {
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - nhapKhoService.getNhapKho(maNhapKho).getTongSoTien());
         nhapKhoService.deleteNhapKho(maNhapKho);
         List<ChiTietNhapKho> chiTietNhapKhos = chiTietNhapKhoRepository.findByMaNhapKho(maNhapKho);
         for (ChiTietNhapKho c : chiTietNhapKhos) {
@@ -517,6 +527,9 @@ public class AppController {
         nhapKho.setTongSoTien(nhapKho.getTongSoTien() - chiTietNhapKho.getDonGia());
         nhapKhoService.saveNhapKho(nhapKho);
 
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - chiTietNhapKho.getSoLuong()*chiTietNhapKho.getDonGia());
+
         chiTietNhapKhoService.deleteChiTietNhapKho(id);
 
         return "redirect:/admin/danh-sach-nhap-kho";
@@ -525,6 +538,9 @@ public class AppController {
     @GetMapping("/admin/danh-sach-nhap-kho/them-san-pham/{maNhapKho}")
     public String showAddChiTietNhapKhoAdmin(@PathVariable Long maNhapKho, Model model) {
         idNhapKho = maNhapKho;
+        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+        model.addAttribute("listSanPham", listSanPham);
         model.addAttribute("sanpham", new SanPham());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -533,8 +549,9 @@ public class AppController {
     }
 
     @PostMapping("/admin/danh-sach-nhap-kho/them-san-pham")
-    public String addChiTietNhapKhoAdmin(@ModelAttribute("sanpham") SanPham sanPham) {
-        SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(sanPham.getTenSanPham(), sanPham.getHangSanPham());
+    public String addChiTietNhapKhoAdmin(@ModelAttribute("sanpham") SanPham sanPham, @RequestParam("selectedObject") String tenSanPham) {
+        System.out.println(tenSanPham);
+        SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(tenSanPham, sanPham.getHangSanPham());
         if (existedSanPham == null) {
             sanPham.setSoLuongTrongKho(sanPham.getSoLuong());
             sanPhamService.saveSanPham(sanPham);

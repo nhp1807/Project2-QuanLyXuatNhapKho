@@ -56,7 +56,12 @@
                     <div>
                         <p>Mã nhà cung cấp</p>
                     </div>
-                    <div><input type="text" th:field="*{maNhaCungCap}" class="information-section-input"></div>
+<!--                    <div><input type="text" th:field="*{maNhaCungCap}" class="information-section-input"></div>-->
+                    <div>
+                        <select name="selectedObject" class="information-section-input">
+                            <option th:each="ncc : ${listNhaCungCap}" th:value="${ncc.maNhaCungCap}" th:text="${ncc.tenNhaCungCap}"></option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="information-section">

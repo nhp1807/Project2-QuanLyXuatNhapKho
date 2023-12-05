@@ -56,7 +56,12 @@
                     <div>
                         <p>Tên sản phẩm</p>
                     </div>
-                    <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>
+<!--                    <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>-->
+                    <div>
+                        <select name="selectedObject" class="information-section-input">
+                            <option th:each="sp : ${listSanPham}" th:value="${sp.tenSanPham}" th:text="${sp.tenSanPham}"></option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="information-section">
@@ -66,11 +71,26 @@
                     <div><input type="text" th:field="*{hangSanPham}" class="information-section-input"></div>
                 </div>
 
+<!--                <div class="information-section">-->
+<!--                    <div>-->
+<!--                        <p>Loại</p>-->
+<!--                    </div>-->
+<!--                    <div><input type="text" th:field="*{loaiSanPham}" class="information-section-input"></div>-->
+<!--                </div>-->
+
                 <div class="information-section">
                     <div>
-                        <p>Loại sản phẩm</p>
+                        <p>Loại</p>
                     </div>
-                    <div><input type="text" th:field="*{loaiSanPham}" class="information-section-input"></div>
+                    <div>
+                        <select name="chucVu" th:field="*{loaiSanPham}" class="information-section-input">
+                            <option value="">Lựa chọn loại</option>
+                            <option value="Lốp">Lốp</option>
+                            <option value="Dầu">Dầu</option>
+                            <option value="Ắc quy">Ắc quy</option>
+                            <option value="Phụ tùng">Phụ tùng</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="information-section">

@@ -16,30 +16,41 @@
 </head>
 
 <body>
-  <div class="sidebar">
-    <div class="information">
-      <img src="/image/logo.jpg" width="10%" alt="">
-    </div>
-    <h2>Welcome, <a href="" th:text="${currentAccount}"></a></h2>
-    <div>
-      <div class="header-nav"><span class="material-symbols-outlined">home</span><a th:href="@{/admin/trang-chu}">Trang
-          chủ</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
-          th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">info</span><a
-          th:href="@{/admin/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">password</span><a
-          th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
-          th:href="@{/admin/danh-sach-san-pham}">Danh sách sản phẩm</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">apartment</span><a
-          th:href="@{/admin/danh-sach-nha-cung-cap}">Nhà cung cấp</a></div>
-      <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng xuất</a>
-      </div>
+<div class="sidebar">
+  <div class="information">
+    <img src="/image/logo.jpg" width="10%" alt="">
+  </div>
+  <h2>Welcome, <a href="" th:text="${currentAccount}"></a></h2>
+  <div>
+    <div class="header-nav"><span class="material-symbols-outlined">home</span><a
+            th:href="@{/admin/trang-chu}">Trang
+      chủ</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">menu</span><a
+            th:href="@{/admin/danh-sach-tai-khoan}">Danh sách tài khoản</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">info</span><a
+            th:href="@{/admin/chinh-sua-thong-tin}">Thông tin cá nhân</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">password</span><a
+            th:href="@{/admin/doi-mat-khau}">Đổi mật khẩu</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
+            th:href="@{/admin/danh-sach-san-pham}">Danh sách sản phẩm</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
+            th:href="@{/admin/danh-sach-nhap-kho}">Nhập nho</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
+            th:href="@{/admin/danh-sach-xuat-kho}">Xuất kho</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">apartment</span><a
+            th:href="@{/admin/danh-sach-nha-cung-cap}">Nhà cung cấp</a></div>
+    <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng
+      xuất</a>
     </div>
   </div>
+</div>
   <div class="content">
-
+    <div style="display: flex; justify-content: end">
+      <form th:action="@{/admin/danh-sach-san-pham}">
+        <input type="text" name="keyword" placeholder="Nhập thông tin">
+        <input type="submit" value="Tìm kiếm">
+      </form>
+    </div>
     <div class="content-header">
       <h1>Danh sách sản phẩm</h1>
     </div>
@@ -51,8 +62,9 @@
         <tr>
           <th class="text-center col-1">ID</th>
           <th class="text-center col-2">Tên sản phẩm</th>
+          <th class="text-center col-1">Hãng</th>
           <th class="text-center col-1">Loại</th>
-          <th class="text-center col-3">Thông tin</th>
+          <th class="text-center col-2">Thông tin</th>
           <th class="text-center col-1">Giá nhập</th>
           <th class="text-center col-1">Giá xuất</th>
           <th class="text-center col-1">Kho</th>
@@ -63,8 +75,9 @@
         <tr th:each="sanpham: ${listSanPham}">
           <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
           <th class="align-middle col-2" th:text="${sanpham.tenSanPham}"></th>
+          <th class="align-middle col-1 text-center" th:text="${sanpham.hangSanPham}"></th>
           <th class="align-middle col-1 text-center" th:text="${sanpham.loaiSanPham}"></th>
-          <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
+          <th class="align-middle col-2" th:text="${sanpham.thongTinSanPham}"></th>
           <th class="align-middle col-1 text-center" th:text="${sanpham.giaNhap}"></th>
           <th class="align-middle col-1 text-center" th:text="${sanpham.giaXuat}"></th>
           <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
