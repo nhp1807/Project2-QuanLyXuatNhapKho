@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -138,8 +139,13 @@ public class AppController {
      * Hiển thị danh sách tài khoản cho admin
      */
     @GetMapping("/admin/danh-sach-tai-khoan")
-    public String showDanhSachTaiKhoanAdmin(Model model) {
-        List<TaiKhoan> listTaiKhoan = taiKhoanService.getAllTaiKhoan();
+    public String showDanhSachTaiKhoanAdmin(Model model, @Param("keyword")String keyword) {
+        List<TaiKhoan> listTaiKhoan;
+        if(keyword != null){
+            listTaiKhoan = taiKhoanRepository.findByHoTenContaining(keyword);
+        } else {
+            listTaiKhoan = taiKhoanService.getAllTaiKhoan();
+        }
         model.addAttribute("listTaiKhoan", listTaiKhoan);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -381,8 +387,14 @@ public class AppController {
      * Hiển thị danh sách sản phẩm cho admin
      */
     @GetMapping("/admin/danh-sach-san-pham")
-    public String showDanhSachSanPhamAdmin(Model model) {
-        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+    public String showDanhSachSanPhamAdmin(Model model, @Param("keyword")String keyword) {
+        List<SanPham> listSanPham;
+        if (keyword != null) {
+            listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
+        } else {
+            listSanPham = sanPhamService.getAllSanPham();
+        }
+
         Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
         model.addAttribute("listSanPham", listSanPham);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -836,6 +848,239 @@ public class AppController {
         taiKhoanService.updateTaiKhoan(existingTaiKhoan);
 
         return "redirect:/ke-toan/danh-sach-tai-khoan";
+    }
+
+    /*
+     * Hiển thị danh sách sản phẩm cho admin
+     */
+    @GetMapping("/ke-toan/danh-sach-san-pham")
+    public String showDanhSachSanPhamKT(Model model) {
+        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+        model.addAttribute("listSanPham", listSanPham);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_danh_sach_sp";
+    }
+
+    /*
+     * Hiển thị thêm sản phẩm
+     */
+    @GetMapping("/ke-toan/them-san-pham")
+    public String showAddSanPhamKT(Model model) {
+        model.addAttribute("sanpham", new SanPham());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kt_them_sp";
+    }
+
+    /*
+     * Xử lý thêm sản phẩm
+     */
+    @PostMapping("/ke-toan/them-san-pham")
+    public String addSanPhamKT(@ModelAttribute("sanpham") SanPham sanPham) {
+        sanPham.setThongTinSanPham("");
+        sanPham.setGiaNhap(0L);
+        sanPham.setGiaXuat(0L);
+        sanPham.setSoLuongTrongKho(0);
+        sanPham.setSoLuong(0);
+        sanPhamService.saveSanPham(sanPham);
+
+        return "redirect:/ke-toan/danh-sach-san-pham";
+    }
+
+    /*
+     * Xử lý xóa sản phẩm
+     */
+    @GetMapping("/ke-toan/danh-sach-san-pham/xoa/{maSanPham}")
+    public String deleteSanPhamKT(@PathVariable Long maSanPham) {
+        sanPhamService.deleteSanPham(maSanPham);
+
+        return "redirect:/ke-toan/danh-sach-san-pham";
+    }
+
+    /*
+     * Hiển thị chỉnh sửa sản phẩm
+     */
+    @GetMapping("/ke-toan/danh-sach-san-pham/{maSanPham}")
+    public String showUpdateSanPhamKT(Model model, @PathVariable Long maSanPham) {
+        model.addAttribute("sanpham", sanPhamService.getSanPham(maSanPham));
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_chinh_sua_sp";
+    }
+
+    /*
+     * Xử lý chỉnh sửa sản phẩm
+     */
+    @PostMapping("/ke-toan/danh-sach-san-pham/chinh-sua/{maSanPham}")
+    public String updateSanPhamKT(@PathVariable Long maSanPham, @ModelAttribute("sanpham") SanPham sanPham) {
+        SanPham existingSanPham = sanPhamService.getSanPham(maSanPham);
+        existingSanPham.setMaSanPham(maSanPham);
+        existingSanPham.setTenSanPham(sanPham.getTenSanPham());
+        existingSanPham.setLoaiSanPham(sanPham.getLoaiSanPham());
+        existingSanPham.setThongTinSanPham(sanPham.getThongTinSanPham());
+        existingSanPham.setGiaNhap(sanPham.getGiaNhap());
+        existingSanPham.setGiaXuat(sanPham.getGiaXuat());
+
+        sanPhamService.updateSanPham(existingSanPham);
+
+        return "redirect:/ke-toan/danh-sach-san-pham";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-nhap-kho")
+    public String showDanhSachNhapKhoKT(Model model) {
+        List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+        model.addAttribute("listNhapKho", listNhapKho);
+//        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kt_danh_sach_nhap_kho";
+    }
+
+    @GetMapping("/ke-toan/them-nhap-kho")
+    public String showAddNhapKhoKT(Model model) {
+        model.addAttribute("nhapkho", new NhapKho());
+        model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_them_nhap_kho";
+    }
+
+    @PostMapping("/ke-toan/them-nhap-kho")
+    public String addNhapKhoKT(@ModelAttribute("nhapkho") NhapKho nhapKho, @RequestParam("selectedObject") Long maNhaCungCap) {
+        nhapKho.setMaNhanVien(idDangNhap);
+        nhapKho.setMaNhaCungCap(maNhaCungCap);
+        nhapKho.setMaNhaCungCap(nhapKho.getMaNhaCungCap());
+        nhapKho.setNgayNhap(nhapKho.getNgayNhap());
+        nhapKho.setTongSoTien(0L);
+
+        nhapKhoService.saveNhapKho(nhapKho);
+
+        return "redirect:/ke-toan/danh-sach-nhap-kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-nhap-kho/xoa/{maNhapKho}")
+    public String deleteNhapKhoKT(@PathVariable Long maNhapKho) {
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(1L);
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - nhapKhoService.getNhapKho(maNhapKho).getTongSoTien());
+        nhapKhoService.deleteNhapKho(maNhapKho);
+        List<ChiTietNhapKho> chiTietNhapKhos = chiTietNhapKhoRepository.findByMaNhapKho(maNhapKho);
+        for (ChiTietNhapKho c : chiTietNhapKhos) {
+            SanPham sp = sanPhamService.getSanPham(c.getMaSanPham());
+            sp.setSoLuongTrongKho(sp.getSoLuongTrongKho() - c.getSoLuong());
+            sanPhamService.saveSanPham(sp);
+            chiTietNhapKhoRepository.delete(c);
+        }
+
+        return "redirect:/ke-toan/danh-sach-nhap-kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-nhap-kho/chi-tiet/{maNhapKho}")
+    public String showDetailNhapKhoKT(@PathVariable Long maNhapKho, Model model) {
+        List<ChiTietNhapKho> listChiTiet = chiTietNhapKhoRepository.findByMaNhapKho(maNhapKho);
+        model.addAttribute("listChiTiet", listChiTiet);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_chi_tiet_nhap_kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-nhap-kho/chi-tiet/xoa/{id}")
+    public String deleteChiTietNhapKhoKT(@PathVariable Long id) {
+        ChiTietNhapKho chiTietNhapKho = chiTietNhapKhoService.getChiTietNhapKho(id);
+        SanPham sanPham = sanPhamService.getSanPham(chiTietNhapKho.getMaSanPham());
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() - chiTietNhapKho.getSoLuong());
+        sanPhamService.saveSanPham(sanPham);
+
+        NhapKho nhapKho = nhapKhoService.getNhapKho(chiTietNhapKho.getMaNhapKho());
+        nhapKho.setTongSoTien(nhapKho.getTongSoTien() - chiTietNhapKho.getDonGia());
+        nhapKhoService.saveNhapKho(nhapKho);
+
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(1L);
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - chiTietNhapKho.getSoLuong()*chiTietNhapKho.getDonGia());
+
+        chiTietNhapKhoService.deleteChiTietNhapKho(id);
+
+        return "redirect:/ke-toan/danh-sach-nhap-kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-nhap-kho/them-san-pham/{maNhapKho}")
+    public String showAddChiTietNhapKhoKT(@PathVariable Long maNhapKho, Model model) {
+        idNhapKho = maNhapKho;
+        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+        model.addAttribute("listSanPham", listSanPham);
+        model.addAttribute("sanpham", new SanPham());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_them_chi_tiet_nhap_kho";
+    }
+
+    @PostMapping("/ke-toan/danh-sach-nhap-kho/them-san-pham")
+    public String addChiTietNhapKhoKT(@ModelAttribute("sanpham") SanPham sanPham, @RequestParam("selectedObject") String tenSanPham) {
+        System.out.println(tenSanPham);
+        SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(tenSanPham, sanPham.getHangSanPham());
+        if (existedSanPham == null) {
+            sanPham.setSoLuongTrongKho(sanPham.getSoLuong());
+            sanPhamService.saveSanPham(sanPham);
+
+            ChiTietNhapKho newchiTietNhapKho = new ChiTietNhapKho();
+            newchiTietNhapKho.setMaNhapKho(idNhapKho);
+            newchiTietNhapKho.setMaSanPham(sanPham.getMaSanPham());
+            newchiTietNhapKho.setSoLuong(sanPham.getSoLuong());
+            newchiTietNhapKho.setDonGia(sanPham.getGiaNhap());
+
+            chiTietNhapKhoService.saveChiTietNhapKho(newchiTietNhapKho);
+        } else {
+            existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() + sanPham.getSoLuong());
+            // Nếu giá nhập và giá xuất lớn hơn sản phẩm đã tồn tại thì mới thay đổi
+            if(sanPham.getGiaNhap() > existedSanPham.getGiaNhap()){
+                existedSanPham.setGiaNhap(sanPham.getGiaNhap());
+            }else{
+                existedSanPham.setGiaNhap(existedSanPham.getGiaNhap());
+            }
+            if(sanPham.getGiaXuat() > existedSanPham.getGiaXuat()){
+                existedSanPham.setGiaXuat(sanPham.getGiaXuat());
+            }else {
+                existedSanPham.setGiaXuat(existedSanPham.getGiaXuat());
+            }
+
+            sanPhamService.updateSanPham(existedSanPham);
+            ChiTietNhapKho chiTietNhapKho = chiTietNhapKhoRepository.ifChiTietExistedSanPham(sanPham.getMaSanPham());
+            if (chiTietNhapKho == null) {
+                ChiTietNhapKho newchiTietNhapKho = new ChiTietNhapKho();
+                newchiTietNhapKho.setMaNhapKho(idNhapKho);
+                newchiTietNhapKho.setMaSanPham(existedSanPham.getMaSanPham());
+                newchiTietNhapKho.setSoLuong(sanPham.getSoLuong());
+                newchiTietNhapKho.setDonGia(sanPham.getGiaNhap());
+
+                chiTietNhapKhoService.saveChiTietNhapKho(newchiTietNhapKho);
+            } else {
+                chiTietNhapKho.setSoLuong(chiTietNhapKho.getSoLuong() + sanPham.getSoLuong());
+                chiTietNhapKho.setDonGia(sanPham.getGiaNhap());
+
+                chiTietNhapKhoService.updateChiTietNhapKho(chiTietNhapKho);
+            }
+        }
+
+        NhapKho nhapKho = nhapKhoService.getNhapKho(idNhapKho);
+        List<ChiTietNhapKho> chiTietNhapKhos = chiTietNhapKhoRepository.findByMaNhapKho(idNhapKho);
+        Long sum = 0L;
+        for (ChiTietNhapKho c : chiTietNhapKhos) {
+            sum += c.getDonGia() * c.getSoLuong();
+        }
+        nhapKho.setTongSoTien(sum);
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(1L);
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() + sanPham.getGiaNhap() * sanPham.getSoLuong());
+        taiKhoanService.saveTaiKhoan(tkAdmin);
+        nhapKhoService.saveNhapKho(nhapKho);
+
+        return "redirect:/ke-toan/danh-sach-nhap-kho";
     }
 
     // ---------------------------Chức năng phụ------------------------------

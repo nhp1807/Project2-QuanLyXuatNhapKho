@@ -10,9 +10,8 @@
           href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
     <link rel="stylesheet" href="/css/form_styles.css">
     <link rel="stylesheet" href="/css/navbar_styles.css">
-    <!-- <script src="../js/admin.js"></script> -->
 
-    <title>Đổi mật khẩu</title>
+    <title>Sửa sản phẩm</title>
 </head>
 
 <body>
@@ -46,30 +45,69 @@
 <div class="content">
 
     <div class="content-header">
-        <h1>Đổi mật khẩu</h1>
+        <h1>Sửa sản phẩm</h1>
     </div>
 
     <div class="content-information">
-        <form th:action="@{/ke-toan/doi-mat-khau}" method="post" th:object="${taikhoan}" id="information">
+        <form
+                th:action="@{/ke-toan/danh-sach-san-pham/chinh-sua/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
+                id="information" th:object="${sanpham}" method="post">
             <div class="information-section">
                 <div>
-                    <p>Mật khẩu mới</p>
+                    <p>Mã sản phẩm</p>
                 </div>
-                <div><input type="password" th:field="*{matKhau}" class="information-section-input"></div>
+                <div><input type="text" th:field="*{maSanPham}" class="information-section-input" readonly="readonly">
+                </div>
             </div>
 
             <div class="information-section">
                 <div>
-                    <p>Xác nhận mật khẩu</p>
+                    <p>Tên sản phẩm</p>
                 </div>
-                <div><input type="password" th:field="*{reMatKhau}" class="information-section-input"></div>
+                <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>
+            </div>
+
+            <div class="information-section">
+                <div>
+                    <p>Loại sản phẩm</p>
+                </div>
+                <div>
+                    <select name="chucVu" th:field="*{loaiSanPham}" class="information-section-input">
+                        <option value="">Lựa chọn loại</option>
+                        <option value="Lốp">Lốp</option>
+                        <option value="Dầu">Dầu</option>
+                        <option value="Ắc quy">Ắc quy</option>
+                        <option value="Phụ tùng">Phụ tùng</option>
+                    </select>
+                </div>
+                <!-- <div><input type="text" th:field="*{loaiSanPham}" class="information-section-input"></div> -->
+            </div>
+
+            <div class="information-section">
+                <div>
+                    <p>Thông tin</p>
+                </div>
+                <div><input type="text" th:field="*{thongTinSanPham}" class="information-section-input"></div>
+            </div>
+
+            <div class="information-section">
+                <div>
+                    <p>Giá nhập</p>
+                </div>
+                <div><input type="text" th:field="*{giaNhap}" class="information-section-input"></div>
+            </div>
+
+            <div class="information-section">
+                <div>
+                    <p>Giá xuất</p>
+                </div>
+                <div><input type="text" th:field="*{giaXuat}" class="information-section-input"></div>
             </div>
 
             <div class="submit-button">
-                <button type="submit" class="btn btn-primary">Lưu</a>
+                <!-- <a href="./ad_dstk.html" class="btn btn-primary">Lưu</a> -->
+                <button type="submit" class="btn btn-primary">Xác nhận</button>
             </div>
-
-            <div style="color: red;" th:text="${errPassword}"></div>
         </form>
     </div>
 

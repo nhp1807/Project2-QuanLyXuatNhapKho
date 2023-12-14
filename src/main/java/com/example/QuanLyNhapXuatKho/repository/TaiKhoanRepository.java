@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.QuanLyNhapXuatKho.entity.TaiKhoan;
 
+import java.util.List;
+
 @Repository
 public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     @Query("SELECT tk FROM TaiKhoan tk WHERE tk.tenTaiKhoan=?1")
@@ -15,4 +17,6 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     public TaiKhoan findByChucVu(String chucVu);
 
     boolean existsByTenTaiKhoan(String TenTaiKhoan);
+
+    List<TaiKhoan> findByHoTenContaining(String keyword);
 }

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import com.example.QuanLyNhapXuatKho.entity.SanPham;
 
+import java.util.List;
+
 @Repository
 public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
     @Query("SELECT sp FROM SanPham sp WHERE sp.tenSanPham=?1")
@@ -16,4 +18,6 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Long> {
 
     @Query("SELECT sp FROM SanPham sp WHERE sp.tenSanPham=?1 AND sp.hangSanPham=?2")
     public SanPham ifSanPhamExisted(String tenSanPham, String hangSanPham);
+
+    List<SanPham> findByTenSanPhamContaining(String keyword);
 }

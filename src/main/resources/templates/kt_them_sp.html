@@ -7,12 +7,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"/>
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="/css/form_styles.css">
     <link rel="stylesheet" href="/css/navbar_styles.css">
-    <!-- <script src="../js/admin.js"></script> -->
 
-    <title>Đổi mật khẩu</title>
+    <title>Thêm sản phẩm</title>
 </head>
 
 <body>
@@ -42,38 +41,73 @@
         </div>
     </div>
 </div>
-
 <div class="content">
 
     <div class="content-header">
-        <h1>Đổi mật khẩu</h1>
+        <h1>Thêm sản phẩm</h1>
     </div>
 
     <div class="content-information">
-        <form th:action="@{/ke-toan/doi-mat-khau}" method="post" th:object="${taikhoan}" id="information">
+        <form th:action="@{/ke-toan/them-san-pham}" id="information" th:object="${sanpham}" method="post">
             <div class="information-section">
                 <div>
-                    <p>Mật khẩu mới</p>
+                    <p>Tên sản phẩm</p>
                 </div>
-                <div><input type="password" th:field="*{matKhau}" class="information-section-input"></div>
+                <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>
             </div>
 
             <div class="information-section">
                 <div>
-                    <p>Xác nhận mật khẩu</p>
+                    <p>Hãng</p>
                 </div>
-                <div><input type="password" th:field="*{reMatKhau}" class="information-section-input"></div>
+                <div><input type="text" th:field="*{hangSanPham}" class="information-section-input"></div>
             </div>
+
+            <div class="information-section">
+                <div>
+                    <p>Loại</p>
+                </div>
+                <div>
+                    <select name="chucVu" th:field="*{loaiSanPham}" class="information-section-input">
+                        <option value="">Lựa chọn loại</option>
+                        <option value="Lốp">Lốp</option>
+                        <option value="Dầu">Dầu</option>
+                        <option value="Ắc quy">Ắc quy</option>
+                        <option value="Phụ tùng">Phụ tùng</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--                <div class="information-section">-->
+            <!--                    <div>-->
+            <!--                        <p>Thông tin</p>-->
+            <!--                    </div>-->
+            <!--                    <div><input type="text" th:field="*{thongTinSanPham}" class="information-section-input"></div>-->
+            <!--                </div>-->
+
+            <!--                <div class="information-section">-->
+            <!--                    <div>-->
+            <!--                        <p>Giá nhập</p>-->
+            <!--                    </div>-->
+            <!--                    <div><input type="text" th:field="*{giaNhap}" class="information-section-input"></div>-->
+            <!--                </div>-->
+
+            <!--                <div class="information-section">-->
+            <!--                    <div>-->
+            <!--                        <p>Giá xuất</p>-->
+            <!--                    </div>-->
+            <!--                    <div><input type="text" th:field="*{giaXuat}" class="information-section-input"></div>-->
+            <!--                </div>-->
 
             <div class="submit-button">
-                <button type="submit" class="btn btn-primary">Lưu</a>
+                <!-- <a href="./ad_dstk.html" class="btn btn-primary">Lưu</a> -->
+                <button type="submit" class="btn btn-primary">Xác nhận</button>
             </div>
-
-            <div style="color: red;" th:text="${errPassword}"></div>
         </form>
     </div>
 
 </div>
+
 
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
