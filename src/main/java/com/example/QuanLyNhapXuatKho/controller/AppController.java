@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.example.QuanLyNhapXuatKho.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,12 +14,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.QuanLyNhapXuatKho.entity.ChiTietNhapKho;
-import com.example.QuanLyNhapXuatKho.entity.NhaCungCap;
-import com.example.QuanLyNhapXuatKho.entity.NhapKho;
-import com.example.QuanLyNhapXuatKho.entity.Role;
-import com.example.QuanLyNhapXuatKho.entity.SanPham;
-import com.example.QuanLyNhapXuatKho.entity.TaiKhoan;
 import com.example.QuanLyNhapXuatKho.repository.ChiTietNhapKhoRepository;
 import com.example.QuanLyNhapXuatKho.repository.ChiTietXuatKhoRepository;
 import com.example.QuanLyNhapXuatKho.repository.NhaCungCapRepository;
@@ -70,7 +65,7 @@ public class AppController {
     public Long idDangNhap;
     public boolean errPassword = false;
     public boolean errRegister = false;
-    public Long idNhapKho;
+    public Long idNhapKho, idXuatKho;
 
     // -------------------------------Đăng nhập và đăng
     // ký---------------------------------------
@@ -139,9 +134,9 @@ public class AppController {
      * Hiển thị danh sách tài khoản cho admin
      */
     @GetMapping("/admin/danh-sach-tai-khoan")
-    public String showDanhSachTaiKhoanAdmin(Model model, @Param("keyword")String keyword) {
+    public String showDanhSachTaiKhoanAdmin(Model model, @Param("keyword") String keyword) {
         List<TaiKhoan> listTaiKhoan;
-        if(keyword != null){
+        if (keyword != null) {
             listTaiKhoan = taiKhoanRepository.findByHoTenContaining(keyword);
         } else {
             listTaiKhoan = taiKhoanService.getAllTaiKhoan();
@@ -249,7 +244,7 @@ public class AppController {
      */
     @PostMapping("/admin/chinh-sua-thong-tin/{maTaiKhoan}")
     public String updateTaiKhoanAdmin(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
-            Model model) {
+                                      Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
@@ -289,8 +284,8 @@ public class AppController {
      */
     @PostMapping("/admin/danh-sach-tai-khoan/chinh-sua/{maTaiKhoan}")
     public String updateTaiKhoanKhachHangAdmin(@PathVariable Long maTaiKhoan,
-            @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
-            Model model) {
+                                               @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
+                                               Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
@@ -370,7 +365,7 @@ public class AppController {
      */
     @PostMapping("/admin/danh-sach-nha-cung-cap/chinh-sua/{maNhaCungCap}")
     public String updateNhaCungCapAdmin(@PathVariable Long maNhaCungCap,
-            @ModelAttribute("nhacungcap") NhaCungCap nhaCungCap) {
+                                        @ModelAttribute("nhacungcap") NhaCungCap nhaCungCap) {
         NhaCungCap existingNhaCungCap = nhaCungCapService.getNhaCungCap(maNhaCungCap);
         existingNhaCungCap.setMaNhaCungCap(nhaCungCap.getMaNhaCungCap());
         existingNhaCungCap.setTenNhaCungCap(nhaCungCap.getTenNhaCungCap());
@@ -387,7 +382,7 @@ public class AppController {
      * Hiển thị danh sách sản phẩm cho admin
      */
     @GetMapping("/admin/danh-sach-san-pham")
-    public String showDanhSachSanPhamAdmin(Model model, @Param("keyword")String keyword) {
+    public String showDanhSachSanPhamAdmin(Model model, @Param("keyword") String keyword) {
         List<SanPham> listSanPham;
         if (keyword != null) {
             listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
@@ -540,7 +535,7 @@ public class AppController {
         nhapKhoService.saveNhapKho(nhapKho);
 
         TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
-        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - chiTietNhapKho.getSoLuong()*chiTietNhapKho.getDonGia());
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - chiTietNhapKho.getSoLuong() * chiTietNhapKho.getDonGia());
 
         chiTietNhapKhoService.deleteChiTietNhapKho(id);
 
@@ -578,14 +573,14 @@ public class AppController {
         } else {
             existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() + sanPham.getSoLuong());
             // Nếu giá nhập và giá xuất lớn hơn sản phẩm đã tồn tại thì mới thay đổi
-            if(sanPham.getGiaNhap() > existedSanPham.getGiaNhap()){
+            if (sanPham.getGiaNhap() > existedSanPham.getGiaNhap()) {
                 existedSanPham.setGiaNhap(sanPham.getGiaNhap());
-            }else{
+            } else {
                 existedSanPham.setGiaNhap(existedSanPham.getGiaNhap());
             }
-            if(sanPham.getGiaXuat() > existedSanPham.getGiaXuat()){
+            if (sanPham.getGiaXuat() > existedSanPham.getGiaXuat()) {
                 existedSanPham.setGiaXuat(sanPham.getGiaXuat());
-            }else {
+            } else {
                 existedSanPham.setGiaXuat(existedSanPham.getGiaXuat());
             }
 
@@ -620,6 +615,135 @@ public class AppController {
         nhapKhoService.saveNhapKho(nhapKho);
 
         return "redirect:/admin/danh-sach-nhap-kho";
+    }
+
+    @GetMapping("/admin/danh-sach-xuat-kho")
+    public String showDanhSachXuatKhoAdmin(Model model) {
+        List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+        model.addAttribute("listXuatKho", listXuatKho);
+//        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "ad_danh_sach_xuat_kho";
+    }
+
+    @GetMapping("/admin/them-xuat-kho")
+    public String showAddXuatKhoAdmin(Model model) {
+        model.addAttribute("xuatkho", new XuatKho());
+        model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "ad_them_xuat_kho";
+    }
+
+    @PostMapping("/admin/them-xuat-kho")
+    public String addXuatKhoAdmin(@ModelAttribute("nhapkho") XuatKho xuatKho) {
+        xuatKho.setMaNhanVien(idDangNhap);
+        xuatKho.setMaKhachHang(xuatKho.getMaKhachHang());
+        xuatKho.setNgayNhap(xuatKho.getNgayNhap());
+        xuatKho.setTongSoTien(0L);
+
+        xuatKhoService.saveXuatKho(xuatKho);
+
+        return "redirect:/admin/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/admin/danh-sach-xuat-kho/xoa/{maXuatKho}")
+    public String deleteXuatKho(@PathVariable Long maXuatKho) {
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() - xuatKhoService.getXuatKho(maXuatKho).getTongSoTien());
+        xuatKhoService.deleteXuatKho(maXuatKho);
+        List<ChiTietXuatKho> chiTietXuatKhos = chiTietXuatKhoRepository.findByMaXuatKho(maXuatKho);
+        for (ChiTietXuatKho c : chiTietXuatKhos) {
+            SanPham sp = sanPhamService.getSanPham(c.getMaSanPham());
+            sp.setSoLuongTrongKho(sp.getSoLuongTrongKho() + c.getSoLuong());
+            sanPhamService.saveSanPham(sp);
+            chiTietXuatKhoRepository.delete(c);
+        }
+
+        return "redirect:/admin/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/admin/danh-sach-xuat-kho/chi-tiet/{maXuatKho}")
+    public String showDetailXuatKhoAdmin(@PathVariable Long maXuatKho, Model model) {
+        List<ChiTietXuatKho> listChiTiet = chiTietXuatKhoRepository.findByMaXuatKho(maXuatKho);
+        model.addAttribute("listChiTiet", listChiTiet);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "ad_chi_tiet_xuat_kho";
+    }
+
+    @GetMapping("/admin/danh-sach-xuat-kho/chi-tiet/xoa/{id}")
+    public String deleteChiTietXuatKhoAdmin(@PathVariable Long id) {
+        ChiTietXuatKho chiTietXuatKho = chiTietXuatKhoService.getChiTietXuatKho(id);
+        SanPham sanPham = sanPhamService.getSanPham(chiTietXuatKho.getMaSanPham());
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + chiTietXuatKho.getSoLuong());
+        sanPhamService.saveSanPham(sanPham);
+
+        XuatKho xuatKho = xuatKhoService.getXuatKho(chiTietXuatKho.getMaXuatKho());
+        xuatKho.setTongSoTien(xuatKho.getTongSoTien() - chiTietXuatKho.getDonGia());
+        xuatKhoService.saveXuatKho(xuatKho);
+
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() + chiTietXuatKho.getSoLuong() * chiTietXuatKho.getDonGia());
+
+        chiTietXuatKhoService.deleteChiTietXuatKho(id);
+
+        return "redirect:/admin/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/admin/danh-sach-xuat-kho/them-san-pham/{maXuatKho}")
+    public String showAddChiTietXuatKhoAdmin(@PathVariable Long maXuatKho, Model model) {
+        idXuatKho = maXuatKho;
+        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+        model.addAttribute("listSanPham", listSanPham);
+        model.addAttribute("sanpham", new SanPham());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "ad_them_chi_tiet_xuat_kho";
+    }
+
+    @PostMapping("/admin/danh-sach-xuat-kho/them-san-pham")
+    public String addChiTietXuatKhoAdmin(@ModelAttribute("sanpham") SanPham sanPham, @RequestParam("selectedObject") String tenSanPham) {
+        System.out.println(tenSanPham);
+        SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(tenSanPham, sanPham.getHangSanPham());
+        existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() - sanPham.getSoLuong());
+        sanPhamService.updateSanPham(existedSanPham);
+
+        ChiTietXuatKho chiTietXuatKho = chiTietXuatKhoRepository.ifChiTietExistedSanPham(sanPham.getMaSanPham());
+
+        if (chiTietXuatKho == null) {
+            ChiTietXuatKho newchiTietXuatKho = new ChiTietXuatKho();
+            newchiTietXuatKho.setMaXuatKho(idXuatKho);
+            newchiTietXuatKho.setMaSanPham(existedSanPham.getMaSanPham());
+            newchiTietXuatKho.setSoLuong(sanPham.getSoLuong());
+            newchiTietXuatKho.setDonGia(existedSanPham.getGiaXuat());
+            System.out.println(newchiTietXuatKho.getDonGia());
+            chiTietXuatKhoService.saveChiTietXuatKho(newchiTietXuatKho);
+        } else {
+            chiTietXuatKho.setSoLuong(chiTietXuatKho.getSoLuong() + sanPham.getSoLuong());
+            chiTietXuatKho.setDonGia(sanPham.getGiaXuat());
+
+            chiTietXuatKhoService.updateChiTietXuatKho(chiTietXuatKho);
+        }
+
+        XuatKho xuatKho = xuatKhoService.getXuatKho(idXuatKho);
+        List<ChiTietXuatKho> chiTietXuatKhos = chiTietXuatKhoRepository.findByMaXuatKho(idXuatKho);
+        Long sum = 0L;
+        for (ChiTietXuatKho c : chiTietXuatKhos) {
+            sum += c.getDonGia() * c.getSoLuong();
+        }
+        xuatKho.setTongSoTien(sum);
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(idDangNhap);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() + existedSanPham.getGiaXuat() * sanPham.getSoLuong());
+        taiKhoanService.saveTaiKhoan(tkAdmin);
+        xuatKhoService.saveXuatKho(xuatKho);
+
+        return "redirect:/admin/danh-sach-xuat-kho";
     }
 
     // -----------------------------Khách hàng-------------------------------
@@ -684,7 +808,7 @@ public class AppController {
 
     @PostMapping("/khach-hang/chinh-sua-thong-tin/{maTaiKhoan}")
     public String updateTaiKhoanKH(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
-            Model model) {
+                                   Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
@@ -795,7 +919,7 @@ public class AppController {
 
     @PostMapping("/ke-toan/chinh-sua-thong-tin/{maTaiKhoan}")
     public String updateTaiKhoanKT(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
-            Model model) {
+                                   Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
@@ -1001,7 +1125,7 @@ public class AppController {
         nhapKhoService.saveNhapKho(nhapKho);
 
         TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(1L);
-        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - chiTietNhapKho.getSoLuong()*chiTietNhapKho.getDonGia());
+        tkAdmin.setTienXuat(tkAdmin.getTienXuat() - chiTietNhapKho.getSoLuong() * chiTietNhapKho.getDonGia());
 
         chiTietNhapKhoService.deleteChiTietNhapKho(id);
 
@@ -1039,14 +1163,14 @@ public class AppController {
         } else {
             existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() + sanPham.getSoLuong());
             // Nếu giá nhập và giá xuất lớn hơn sản phẩm đã tồn tại thì mới thay đổi
-            if(sanPham.getGiaNhap() > existedSanPham.getGiaNhap()){
+            if (sanPham.getGiaNhap() > existedSanPham.getGiaNhap()) {
                 existedSanPham.setGiaNhap(sanPham.getGiaNhap());
-            }else{
+            } else {
                 existedSanPham.setGiaNhap(existedSanPham.getGiaNhap());
             }
-            if(sanPham.getGiaXuat() > existedSanPham.getGiaXuat()){
+            if (sanPham.getGiaXuat() > existedSanPham.getGiaXuat()) {
                 existedSanPham.setGiaXuat(sanPham.getGiaXuat());
-            }else {
+            } else {
                 existedSanPham.setGiaXuat(existedSanPham.getGiaXuat());
             }
 
