@@ -56,7 +56,7 @@
                 <div>
                     <p>Tên sản phẩm</p>
                 </div>
-                <!--                    <div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>-->
+                <!--<div><input type="text" th:field="*{tenSanPham}" class="information-section-input"></div>-->
                 <div>
                     <select name="selectedObject" class="information-section-input">
                         <option th:each="sp : ${listSanPham}" th:value="${sp.tenSanPham}" th:text="${sp.tenSanPham}"></option>
@@ -71,27 +71,34 @@
                 <div><input type="text" th:field="*{hangSanPham}" class="information-section-input"></div>
             </div>
 
-            <!--                <div class="information-section">-->
-            <!--                    <div>-->
-            <!--                        <p>Loại</p>-->
-            <!--                    </div>-->
-            <!--                    <div><input type="text" th:field="*{loaiSanPham}" class="information-section-input"></div>-->
-            <!--                </div>-->
+<!--            <div th:if="${sanpham.loaiSanPham == 'Lop'}">-->
+<!--                <div class="information-section">-->
+<!--                    <div>-->
+<!--                        <p>Hãng sản phẩm</p>-->
+<!--                    </div>-->
+<!--&lt;!&ndash;                    <div><input type="text" th:field="*{hangSanPham}" class="information-section-input"></div>&ndash;&gt;-->
+<!--                    <div>-->
+<!--                        <select name="selectedHang" class="information-section-input">-->
+<!--                            <option th:each="sp : ${listLop}" th:value="${sp}" th:text="${sp}"></option>-->
+<!--                        </select>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <div class="information-section">
-                <div>
-                    <p>Loại</p>
-                </div>
-                <div>
-                    <select name="chucVu" th:field="*{loaiSanPham}" class="information-section-input">
-                        <option value="">Lựa chọn loại</option>
-                        <option value="Lốp">Lốp</option>
-                        <option value="Dầu">Dầu</option>
-                        <option value="Ắc quy">Ắc quy</option>
-                        <option value="Phụ tùng">Phụ tùng</option>
-                    </select>
-                </div>
-            </div>
+<!--            <div class="information-section">-->
+<!--                <div>-->
+<!--                    <p>Loại</p>-->
+<!--                </div>-->
+<!--                <div>-->
+<!--                    <select name="loai" th:field="*{loaiSanPham}" class="information-section-input">-->
+<!--                        <option value="">Lựa chọn loại</option>-->
+<!--                        <option value="Lop">Lốp</option>-->
+<!--                        <option value="Dau">Dầu</option>-->
+<!--                        <option value="Ac quy">Ắc quy</option>-->
+<!--                        <option value="Phu tung">Phụ tùng</option>-->
+<!--                    </select>-->
+<!--                </div>-->
+<!--            </div>-->
 
 <!--            <div class="information-section">-->
 <!--                <div>-->

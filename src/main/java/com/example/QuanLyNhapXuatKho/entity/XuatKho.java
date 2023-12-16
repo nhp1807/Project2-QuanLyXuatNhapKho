@@ -25,6 +25,8 @@ public class XuatKho {
     private Long maNhanVien;
     @Column
     private Long maKhachHang;
+//    @Column
+//    private String soDienThoai;
     @Column
     private String ngayNhap;
     @Column

@@ -638,9 +638,9 @@ public class AppController {
     }
 
     @PostMapping("/admin/them-xuat-kho")
-    public String addXuatKhoAdmin(@ModelAttribute("nhapkho") XuatKho xuatKho) {
+    public String addXuatKhoAdmin(@ModelAttribute("nhapkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
         xuatKho.setMaNhanVien(idDangNhap);
-        xuatKho.setMaKhachHang(xuatKho.getMaKhachHang());
+        xuatKho.setMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
         xuatKho.setNgayNhap(xuatKho.getNgayNhap());
         xuatKho.setTongSoTien(0L);
 
@@ -704,6 +704,39 @@ public class AppController {
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
 
+        List<String> listHangDau = new ArrayList<>();
+        List<String> listHangAcQuy = new ArrayList<>();
+        List<String> listHangLop = new ArrayList<>();
+        List<String> listHangPhuTung = new ArrayList<>();
+
+        for(SanPham sp : listSanPham){
+            if(sp.getLoaiSanPham().equals("Lốp")){
+                if(!listHangLop.contains(sp.getHangSanPham())){
+                    listHangLop.add(sp.getHangSanPham());
+                }
+            } else if (sp.getLoaiSanPham().equals("Dầu")) {
+                if(!listHangDau.contains(sp.getHangSanPham())){
+                    listHangDau.add(sp.getHangSanPham());
+                }
+            } else if (sp.getLoaiSanPham().equals("Ắc quy")) {
+                if(!listHangAcQuy.contains(sp.getHangSanPham())){
+                    listHangAcQuy.add(sp.getHangSanPham());
+                }
+            } else if (sp.getLoaiSanPham().equals("Phụ tùng")) {
+                if(!listHangPhuTung.contains(sp.getHangSanPham())){
+                    listHangPhuTung.add(sp.getHangSanPham());
+                }
+            }
+        }
+
+        listHangDau.forEach(sp -> System.out.println(sp));
+
+        model.addAttribute("listLop", listHangLop);
+        model.addAttribute("listDau", listHangDau);
+        model.addAttribute("listAcQuy", listHangAcQuy);
+        model.addAttribute("listPhuTung", listHangPhuTung);
+
+
         return "ad_them_chi_tiet_xuat_kho";
     }
 
@@ -744,6 +777,17 @@ public class AppController {
         xuatKhoService.saveXuatKho(xuatKho);
 
         return "redirect:/admin/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/admin/thong-ke")
+    public String showThongKeAdmin(){
+        return "ad_thong_ke";
+    }
+
+    @GetMapping("/admin/thong-ke/xuat-kho")
+    public String showThongKeXuatKhoAdmin(Model model){
+        model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
+        return "ad_thong_ke_xuat_kho";
     }
 
     // -----------------------------Khách hàng-------------------------------
