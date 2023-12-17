@@ -1,10 +1,7 @@
 package com.example.QuanLyNhapXuatKho.controller;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import com.example.QuanLyNhapXuatKho.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -787,6 +784,40 @@ public class AppController {
     @GetMapping("/admin/thong-ke/xuat-kho")
     public String showThongKeXuatKhoAdmin(Model model){
         model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
+
+        // Tìm khách mua nhiều nhất
+        List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+        Map<Long, Long> customerSpent = new HashMap<>();
+        for (XuatKho xk : listXuatKho){
+            customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
+        }
+
+        Long maxSpent = 0L;
+        for(Map.Entry<Long, Long> map : customerSpent.entrySet()){
+            if(map.getValue() > maxSpent){
+                maxSpent = map.getValue();
+            }
+        }
+
+        model.addAttribute("maxCustomer", maxSpent);
+
+        // Tìm hàng bán được nhiều nhất
+        int maxProductCount = 0;
+        List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
+        Map<Long, Integer> productSellCount = new HashMap<>();
+        for(ChiTietXuatKho ctxk : listChiTietXuatKho){
+            productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
+        }
+
+        for(Map.Entry<Long, Integer> map : productSellCount.entrySet()){
+            if(map.getValue() > maxProductCount){
+                maxProductCount = map.getValue();
+            }
+        }
+
+        model.addAttribute("maxProductCount", maxProductCount);
+
+
         return "ad_thong_ke_xuat_kho";
     }
 
