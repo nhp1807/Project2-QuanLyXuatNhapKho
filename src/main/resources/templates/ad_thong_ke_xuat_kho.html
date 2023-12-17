@@ -55,6 +55,52 @@
         <h1>Danh sách xuất kho</h1>
     </div>
 
+
+    <div style="display: flex">
+        Khách hàng chi tiêu nhiều nhất:
+        <div th:text="${maxCustomer}">
+        </div>
+    </div>
+
+    <div style="display: flex">
+        Sản phẩm bán được nhiều nhất (Mặt hàng - số lượng):
+        <div th:text="${maxProductCount}">
+        </div>
+    </div>
+
+    <div style="display: flex">
+        Tổng số hóa đơn xuất:
+        <div th:text="${numberOfHoaDonXuat}">
+        </div>
+    </div>
+
+    <div style="display: flex">
+        Tổng số hóa đơn nhập:
+        <div th:text="${numberOfHoaDonNhap}">
+        </div>
+    </div>
+
+    <div style="display: flex">
+        Tổng tiền chi:
+        <div th:text="${tongTienChi}">
+        </div>
+        VNĐ
+    </div>
+
+    <div style="display: flex">
+        Tổng tiền thu:
+        <div th:text="${tongTienThu}">
+        </div>
+        VNĐ
+    </div>
+
+    <div style="display: flex">
+        Tổng tiền lãi:
+        <div th:text="${tongTienLai}">
+        </div>
+        VNĐ
+    </div>
+
     <table id="dtHorizontalVerticalExample" class="table table-striped table-bordered table-hover">
         <thead>
         <tr>
@@ -80,18 +126,6 @@
         </tr>
         </tbody>
     </table>
-
-    <div style="display: flex">
-        Khách hàng chi tiêu nhiều nhất:
-        <div th:text="${maxCustomer}">
-        </div>
-    </div>
-
-    <div style="display: flex">
-        Sản phẩm bán được nhiều nhất (Mặt hàng - số lượng):
-        <div th:text="${maxProductCount}">
-        </div>
-    </div>
 </div>
 
 

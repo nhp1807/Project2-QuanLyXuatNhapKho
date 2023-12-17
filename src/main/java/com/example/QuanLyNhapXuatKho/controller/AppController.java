@@ -64,8 +64,7 @@ public class AppController {
     public boolean errRegister = false;
     public Long idNhapKho, idXuatKho;
 
-    // -------------------------------Đăng nhập và đăng
-    // ký---------------------------------------
+    // ---------Đăng nhập và đăng ký-----------------
 
     /*
      * Hiển thị giao diện login
@@ -706,21 +705,21 @@ public class AppController {
         List<String> listHangLop = new ArrayList<>();
         List<String> listHangPhuTung = new ArrayList<>();
 
-        for(SanPham sp : listSanPham){
-            if(sp.getLoaiSanPham().equals("Lốp")){
-                if(!listHangLop.contains(sp.getHangSanPham())){
+        for (SanPham sp : listSanPham) {
+            if (sp.getLoaiSanPham().equals("Lốp")) {
+                if (!listHangLop.contains(sp.getHangSanPham())) {
                     listHangLop.add(sp.getHangSanPham());
                 }
             } else if (sp.getLoaiSanPham().equals("Dầu")) {
-                if(!listHangDau.contains(sp.getHangSanPham())){
+                if (!listHangDau.contains(sp.getHangSanPham())) {
                     listHangDau.add(sp.getHangSanPham());
                 }
             } else if (sp.getLoaiSanPham().equals("Ắc quy")) {
-                if(!listHangAcQuy.contains(sp.getHangSanPham())){
+                if (!listHangAcQuy.contains(sp.getHangSanPham())) {
                     listHangAcQuy.add(sp.getHangSanPham());
                 }
             } else if (sp.getLoaiSanPham().equals("Phụ tùng")) {
-                if(!listHangPhuTung.contains(sp.getHangSanPham())){
+                if (!listHangPhuTung.contains(sp.getHangSanPham())) {
                     listHangPhuTung.add(sp.getHangSanPham());
                 }
             }
@@ -777,24 +776,24 @@ public class AppController {
     }
 
     @GetMapping("/admin/thong-ke")
-    public String showThongKeAdmin(){
+    public String showThongKeAdmin() {
         return "ad_thong_ke";
     }
 
     @GetMapping("/admin/thong-ke/xuat-kho")
-    public String showThongKeXuatKhoAdmin(Model model){
+    public String showThongKeXuatKhoAdmin(Model model) {
         model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
 
         // Tìm khách mua nhiều nhất
         List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
         Map<Long, Long> customerSpent = new HashMap<>();
-        for (XuatKho xk : listXuatKho){
+        for (XuatKho xk : listXuatKho) {
             customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
         }
 
         Long maxSpent = 0L;
-        for(Map.Entry<Long, Long> map : customerSpent.entrySet()){
-            if(map.getValue() > maxSpent){
+        for (Map.Entry<Long, Long> map : customerSpent.entrySet()) {
+            if (map.getValue() > maxSpent) {
                 maxSpent = map.getValue();
             }
         }
@@ -805,18 +804,34 @@ public class AppController {
         int maxProductCount = 0;
         List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
         Map<Long, Integer> productSellCount = new HashMap<>();
-        for(ChiTietXuatKho ctxk : listChiTietXuatKho){
+        for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
             productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
         }
 
-        for(Map.Entry<Long, Integer> map : productSellCount.entrySet()){
-            if(map.getValue() > maxProductCount){
+        for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
+            if (map.getValue() > maxProductCount) {
                 maxProductCount = map.getValue();
             }
         }
 
         model.addAttribute("maxProductCount", maxProductCount);
 
+        // TODO: Tìm nhà cung cấp cung cấp nhiều sản phẩm nhất
+        // TODO: Tìm nhân viên bán được nhiều hàng nhất
+
+        // Tìm tiền nhập, xuất, lãi
+        int numberOfHoaDonXuat = xuatKhoService.getAllXuatKho().size();
+        int numberOfHoaDonNhap = nhapKhoService.getAllNhapKho().size();
+
+        model.addAttribute("numberOfHoaDonXuat", numberOfHoaDonXuat);
+        model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
+        Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
+        Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
+        Long tongTienLai= tongTienThu - tongTienChi;
+
+        model.addAttribute("tongTienChi", tongTienChi);
+        model.addAttribute("tongTienThu", tongTienThu);
+        model.addAttribute("tongTienLai", tongTienLai);
 
         return "ad_thong_ke_xuat_kho";
     }
@@ -1286,75 +1301,5 @@ public class AppController {
     public String getLastName(String name) {
         String[] names = name.split(" ");
         return names[names.length - 1];
-    }
-
-    public String generateMaTaiKhoan(String chucVu) {
-        if (chucVu.equals("Admin")) {
-            int max = 0;
-            List<TaiKhoan> taiKhoanAdmin = listTaiKhoanByChucVu(chucVu);
-
-            for (TaiKhoan taiKhoan : taiKhoanAdmin) {
-                String ma = "AD123";
-                int currentMa = Integer.parseInt(ma.substring(2));
-                if (max > currentMa) {
-                    max = currentMa;
-                }
-
-            }
-
-            return "AD" + (max + 1);
-        } else if (chucVu.equals("Khách hàng")) {
-            int max = 0;
-            List<TaiKhoan> taiKhoanAdmin = listTaiKhoanByChucVu(chucVu);
-
-            for (TaiKhoan taiKhoan : taiKhoanAdmin) {
-                String ma = "KH123";
-                int currentMa = Integer.parseInt(ma.substring(2));
-                if (max > currentMa) {
-                    max = currentMa;
-                }
-
-            }
-
-            return "KH" + (max + 1);
-        } else {
-            int max = 0;
-            List<TaiKhoan> taiKhoanAdmin = listTaiKhoanByChucVu(chucVu);
-
-            for (TaiKhoan taiKhoan : taiKhoanAdmin) {
-                String ma = "KT123";
-                int currentMa = Integer.parseInt(ma.substring(2));
-                if (max > currentMa) {
-                    max = currentMa;
-                }
-
-            }
-
-            return "KT" + (max + 1);
-        }
-    }
-
-    public List<TaiKhoan> listTaiKhoanByChucVu(String chucVu) {
-        List<TaiKhoan> listTaiKhoan = new ArrayList<>();
-        if (chucVu.equals("Admin")) {
-            for (TaiKhoan taiKhoan : taiKhoanService.getAllTaiKhoan()) {
-                if (taiKhoan.getRole() == Role.ADMIN) {
-                    listTaiKhoan.add(taiKhoan);
-                }
-            }
-        } else if (chucVu.equals("Khách hàng")) {
-            for (TaiKhoan taiKhoan : taiKhoanService.getAllTaiKhoan()) {
-                if (taiKhoan.getRole() == Role.KHACHHANG) {
-                    listTaiKhoan.add(taiKhoan);
-                }
-            }
-        } else {
-            for (TaiKhoan taiKhoan : taiKhoanService.getAllTaiKhoan()) {
-                if (taiKhoan.getRole() == Role.KETOAN) {
-                    listTaiKhoan.add(taiKhoan);
-                }
-            }
-        }
-        return listTaiKhoan;
     }
 }
