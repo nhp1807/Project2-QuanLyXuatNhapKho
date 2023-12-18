@@ -31,11 +31,16 @@
                 th:href="@{/khach-hang/doi-mat-khau}">Đổi mật khẩu</a></div>
         <div class="header-nav"><span class="material-symbols-outlined">inventory_2</span><a
                 th:href="@{/khach-hang/danh-sach-san-pham}">Danh sách sản phẩm</a></div>
+        <div class="header-nav"><span class="material-symbols-outlined">shopping_cart</span><a
+                th:href="@{/khach-hang/danh-sach-dat-hang}">Danh sách đặt hàng</a></div>
+        <div class="header-nav"><span class="material-symbols-outlined">history</span><a
+                th:href="@{/khach-hang/lich-su}">Lịch sử mua hàng</a></div>
         <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng
             xuất</a>
         </div>
     </div>
 </div>
+
 <div class="content">
 
     <div class="content-header">
@@ -49,8 +54,9 @@
         <tr>
             <th class="align-middle text-center col-1">ID</th>
             <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-4">Thông tin</th>
+            <th class="align-middle text-center col-3">Thông tin</th>
             <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            <th class="align-middle text-center col-1">Tồn kho</th>
             <th class="align-middle text-center col-1">Chức năng</th>
         </tr>
         </thead>
@@ -58,8 +64,9 @@
         <tr th:each="sanpham: ${listLop}">
             <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
             <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.thongTinSanPham}"></th>
+            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
             <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
                    class="btn btn-primary">Đặt</a>
@@ -75,8 +82,9 @@
         <tr>
             <th class="align-middle text-center col-1">ID</th>
             <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-4">Thông tin</th>
+            <th class="align-middle text-center col-3">Thông tin</th>
             <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            <th class="align-middle text-center col-1">Tồn kho</th>
             <th class="align-middle text-center col-1">Chức năng</th>
         </tr>
         </thead>
@@ -84,8 +92,9 @@
         <tr th:each="sanpham: ${listDau}">
             <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
             <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.thongTinSanPham}"></th>
+            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
             <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
                    class="btn btn-primary">Đặt</a>
@@ -101,8 +110,9 @@
         <tr>
             <th class="align-middle text-center col-1">ID</th>
             <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-4">Thông tin</th>
+            <th class="align-middle text-center col-3">Thông tin</th>
             <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            <th class="align-middle text-center col-1">Tồn kho</th>
             <th class="align-middle text-center col-1">Chức năng</th>
         </tr>
         </thead>
@@ -110,8 +120,9 @@
         <tr th:each="sanpham: ${listAcQuy}">
             <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
             <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.thongTinSanPham}"></th>
+            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
             <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
                    class="btn btn-primary">Đặt</a>
@@ -127,8 +138,9 @@
         <tr>
             <th class="align-middle text-center col-1">ID</th>
             <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-4">Thông tin</th>
+            <th class="align-middle text-center col-3">Thông tin</th>
             <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            <th class="align-middle text-center col-1">Tồn kho</th>
             <th class="align-middle text-center col-1">Chức năng</th>
         </tr>
         </thead>
@@ -136,8 +148,9 @@
         <tr th:each="sanpham: ${listPhuTung}">
             <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
             <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.thongTinSanPham}"></th>
+            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
             <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
                    class="btn btn-primary">Đặt</a>

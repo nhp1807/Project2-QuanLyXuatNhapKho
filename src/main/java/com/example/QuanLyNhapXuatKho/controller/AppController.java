@@ -686,8 +686,14 @@ public class AppController {
     public String showAddChiTietXuatKhoAdmin(@PathVariable Long maXuatKho, Model model) {
         idXuatKho = maXuatKho;
         List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        List<SanPham> listSanPhamConLai = new ArrayList<>();
+        for(SanPham sanPham : listSanPham){
+            if(sanPham.getSoLuongTrongKho() > 0){
+                listSanPhamConLai.add(sanPham);
+            }
+        }
         Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
-        model.addAttribute("listSanPham", listSanPham);
+        model.addAttribute("listSanPham", listSanPhamConLai);
         model.addAttribute("sanpham", new SanPham());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -730,7 +736,7 @@ public class AppController {
 
     @PostMapping("/admin/danh-sach-xuat-kho/them-san-pham")
     public String addChiTietXuatKhoAdmin(@ModelAttribute("sanpham") SanPham sanPham, @RequestParam("selectedObject") String tenSanPham) {
-        System.out.println(tenSanPham);
+//        System.out.println(tenSanPham);
         SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(tenSanPham, sanPham.getHangSanPham());
         existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() - sanPham.getSoLuong());
         sanPhamService.updateSanPham(existedSanPham);
@@ -844,6 +850,40 @@ public class AppController {
 
 
         return "ad_danh_sach_dat_hang";
+    }
+
+    @GetMapping("/admin/dat-hang/xoa/{maDatHang}")
+    public String deleteDatHangAdmin(@PathVariable Long maDatHang){
+        DatHang datHang = datHangService.getDatHang(maDatHang);
+        SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + datHang.getSoLuong());
+
+        datHangService.deleteDatHang(maDatHang);
+
+        return "redirect:/admin/dat-hang";
+    }
+
+    @GetMapping("/admin/dat-hang/thanh-toan/{maDatHang}")
+    public String thanhToanDatHangAdmin(@PathVariable Long maDatHang){
+        DatHang datHang = datHangService.getDatHang(maDatHang);
+        SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
+        XuatKho xuatKho = new XuatKho();
+        xuatKho.setMaKhachHang(datHang.getMaKhachHang());
+        xuatKho.setTongSoTien(datHang.getTongTien());
+        xuatKho.setMaNhanVien(idDangNhap);
+        xuatKho.setNgayNhap(datHang.getNgayDat());
+        xuatKhoService.saveXuatKho(xuatKho);
+        ChiTietXuatKho chiTietXuatKho = new ChiTietXuatKho();
+        chiTietXuatKho.setDonGia(sanPham.getGiaXuat());
+        chiTietXuatKho.setSoLuong(datHang.getSoLuong());
+        chiTietXuatKho.setMaXuatKho(xuatKho.getMaXuatKho());
+        chiTietXuatKho.setMaSanPham(datHang.getMaSanPham());
+        chiTietXuatKhoService.saveChiTietXuatKho(chiTietXuatKho);
+
+        datHangService.deleteDatHang(maDatHang);
+
+
+        return "redirect:/admin/dat-hang";
     }
 
     // -----------------------------Khách hàng-------------------------------
@@ -995,7 +1035,6 @@ public class AppController {
         sanPhamService.saveSanPham(sanPham);
         return "redirect:/khach-hang/danh-sach-dat-hang";
     }
-
 
     @GetMapping("/khach-hang/danh-sach-dat-hang")
     public String showDanhSachDatHangKH(Model model){
