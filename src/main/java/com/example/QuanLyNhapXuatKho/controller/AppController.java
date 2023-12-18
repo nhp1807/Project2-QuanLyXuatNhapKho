@@ -1,30 +1,18 @@
 package com.example.QuanLyNhapXuatKho.controller;
 
 import java.security.Principal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import com.example.QuanLyNhapXuatKho.entity.*;
+import com.example.QuanLyNhapXuatKho.repository.*;
+import com.example.QuanLyNhapXuatKho.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import com.example.QuanLyNhapXuatKho.repository.ChiTietNhapKhoRepository;
-import com.example.QuanLyNhapXuatKho.repository.ChiTietXuatKhoRepository;
-import com.example.QuanLyNhapXuatKho.repository.NhaCungCapRepository;
-import com.example.QuanLyNhapXuatKho.repository.NhapKhoRepository;
-import com.example.QuanLyNhapXuatKho.repository.SanPhamRepository;
-import com.example.QuanLyNhapXuatKho.repository.TaiKhoanRepository;
-import com.example.QuanLyNhapXuatKho.repository.XuatKhoRepository;
-import com.example.QuanLyNhapXuatKho.service.ChiTietNhapKhoService;
-import com.example.QuanLyNhapXuatKho.service.ChiTietXuatKhoService;
-import com.example.QuanLyNhapXuatKho.service.NhaCungCapService;
-import com.example.QuanLyNhapXuatKho.service.NhapKhoService;
-import com.example.QuanLyNhapXuatKho.service.SanPhamService;
-import com.example.QuanLyNhapXuatKho.service.TaiKhoanService;
-import com.example.QuanLyNhapXuatKho.service.XuatKhoService;
 
 import jakarta.validation.Valid;
 
@@ -58,8 +46,12 @@ public class AppController {
     private TaiKhoanRepository taiKhoanRepository;
     @Autowired
     private TaiKhoanService taiKhoanService;
+    @Autowired
+    private DatHangRepository datHangRepository;
+    @Autowired
+    private DatHangService datHangService;
 
-    public Long idDangNhap;
+    public Long idDangNhap, idSanPhamSelect;
     public boolean errPassword = false;
     public boolean errRegister = false;
     public Long idNhapKho, idXuatKho;
@@ -776,13 +768,17 @@ public class AppController {
     }
 
     @GetMapping("/admin/thong-ke")
-    public String showThongKeAdmin() {
+    public String showThongKeAdmin(Model model) {
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
         return "ad_thong_ke";
     }
 
     @GetMapping("/admin/thong-ke/xuat-kho")
     public String showThongKeXuatKhoAdmin(Model model) {
         model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
 
         // Tìm khách mua nhiều nhất
         List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
@@ -834,6 +830,20 @@ public class AppController {
         model.addAttribute("tongTienLai", tongTienLai);
 
         return "ad_thong_ke_xuat_kho";
+    }
+
+    // TODO:
+    @GetMapping("/admin/thong-ke/san-pham")
+    public String showThongKeSanPhamAdmin(){
+        return "";
+    }
+
+    @GetMapping("/admin/dat-hang")
+    public String showDanhSachDatHangAdmin(Model model){
+        model.addAttribute("listDatHang", datHangService.getAllDatHang());
+
+
+        return "ad_danh_sach_dat_hang";
     }
 
     // -----------------------------Khách hàng-------------------------------
@@ -938,8 +948,80 @@ public class AppController {
         model.addAttribute("listDau", listDau);
         model.addAttribute("listAcQuy", listAcQuy);
         model.addAttribute("listPhuTung", listPhuTung);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
 
         return "kh_danh_sach_sp";
+    }
+
+    @GetMapping("/khach-hang/lich-su")
+    public String showLichSu(Model model){
+        List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+        List<XuatKho> listXuatKhoKH = new ArrayList<>();
+
+        for(XuatKho xk : listXuatKho){
+            if(xk.getMaKhachHang() == idDangNhap){
+                listXuatKhoKH.add(xk);
+            }
+        }
+
+        model.addAttribute("listXuatKho", listXuatKhoKH);
+        return "kh_lich_su";
+    }
+
+    @GetMapping("/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}")
+    public String showDatHangKH(Model model, @PathVariable Long maSanPham){
+        idSanPhamSelect = maSanPham;
+        model.addAttribute("dathang", new DatHang());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_them_dat_hang";
+    }
+
+    @PostMapping("/khach-hang/dat-hang")
+    public String addDatHangKH(@ModelAttribute("dathang") DatHang datHang){
+        Long currentTime = System.currentTimeMillis();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String formatedDate = format.format(new Date(currentTime));
+        datHang.setNgayDat(formatedDate);
+        datHang.setMaKhachHang(idDangNhap);
+        datHang.setMaSanPham(idSanPhamSelect);
+        datHang.setTongTien(sanPhamService.getSanPham(idSanPhamSelect).getGiaXuat() * datHang.getSoLuong());
+        datHangService.saveDatHang(datHang);
+
+        // Giảm số lượng sản phẩm đó trong kho
+        SanPham sanPham = sanPhamService.getSanPham(idSanPhamSelect);
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() - datHang.getSoLuong());
+        sanPhamService.saveSanPham(sanPham);
+        return "redirect:/khach-hang/danh-sach-dat-hang";
+    }
+
+
+    @GetMapping("/khach-hang/danh-sach-dat-hang")
+    public String showDanhSachDatHangKH(Model model){
+        List<DatHang> listDatHang = datHangService.getAllDatHang();
+        List<DatHang> listDathangKH = new ArrayList<>();
+
+        for (DatHang datHang : listDatHang){
+            if(datHang.getMaKhachHang() == idDangNhap){
+                listDathangKH.add(datHang);
+            }
+        }
+
+        model.addAttribute("listDatHang", listDathangKH);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_danh_sach_dat_hang";
+    }
+
+    @GetMapping("/khach-hang/danh-sach-dat-hang/xoa/{maDatHang}")
+    public String deleteDatHangKH(@PathVariable Long maDatHang){
+        // Tăng số lượng sản phẩm đó trong kho
+        SanPham sanPham = sanPhamService.getSanPham(datHangService.getDatHang(maDatHang).getMaSanPham());
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + datHangService.getDatHang(maDatHang).getSoLuong());
+        sanPhamService.saveSanPham(sanPham);
+        datHangService.deleteDatHang(maDatHang);
+        return "redirect:/khach-hang/danh-sach-dat-hang";
     }
 
     // ------------------------------Kế toán---------------------------------
