@@ -104,6 +104,33 @@ public class AppController {
         return "redirect:/login";
     }
 
+    @GetMapping("/")
+    public String index(Model model){
+        List<SanPham> listLop = new ArrayList<>();
+        List<SanPham> listDau = new ArrayList<>();
+        List<SanPham> listAcQuy = new ArrayList<>();
+        List<SanPham> listPhuTung = new ArrayList<>();
+
+        for (SanPham sanPham : sanPhamService.getAllSanPham()) {
+            if (sanPham.getLoaiSanPham().equals("Lốp")) {
+                listLop.add(sanPham);
+            } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
+                listDau.add(sanPham);
+            } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
+                listAcQuy.add(sanPham);
+            } else {
+                listPhuTung.add(sanPham);
+            }
+        }
+
+        model.addAttribute("listLop", listLop);
+        model.addAttribute("listLop", listLop);
+        model.addAttribute("listDau", listDau);
+        model.addAttribute("listAcQuy", listAcQuy);
+        model.addAttribute("listPhuTung", listPhuTung);
+        return "index";
+    }
+
     // ----------------------------------Admin----------------------------------------
     /*
      * Hiển thị trang chủ cho admin
@@ -455,6 +482,7 @@ public class AppController {
     @GetMapping("/admin/danh-sach-nhap-kho")
     public String showDanhSachNhapKhoAdmin(Model model) {
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+        Collections.sort(listNhapKho, Comparator.comparing(NhapKho::getNgayNhap).reversed());
         model.addAttribute("listNhapKho", listNhapKho);
 //        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -608,6 +636,7 @@ public class AppController {
     @GetMapping("/admin/danh-sach-xuat-kho")
     public String showDanhSachXuatKhoAdmin(Model model) {
         List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+        Collections.sort(listXuatKho, Comparator.comparing(XuatKho::getNgayNhap).reversed());
         model.addAttribute("listXuatKho", listXuatKho);
 //        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
