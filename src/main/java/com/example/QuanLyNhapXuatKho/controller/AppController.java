@@ -1447,6 +1447,217 @@ public class AppController {
         return "redirect:/ke-toan/danh-sach-nhap-kho";
     }
 
+    @GetMapping("/ke-toan/danh-sach-xuat-kho")
+    public String showDanhSachXuatKhoKT(Model model) {
+        List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+        Collections.sort(listXuatKho, Comparator.comparing(XuatKho::getNgayNhap).reversed());
+        model.addAttribute("listXuatKho", listXuatKho);
+//        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kt_danh_sach_xuat_kho";
+    }
+
+    @GetMapping("/ke-toan/them-xuat-kho")
+    public String showAddXuatKhoKT(Model model) {
+        model.addAttribute("xuatkho", new XuatKho());
+        model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_them_xuat_kho";
+    }
+
+    @PostMapping("/ke-toan/them-xuat-kho")
+    public String addXuatKhoKT(@ModelAttribute("nhapkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
+        xuatKho.setMaNhanVien(idDangNhap);
+        xuatKho.setMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
+        xuatKho.setNgayNhap(xuatKho.getNgayNhap());
+        xuatKho.setTongSoTien(0L);
+
+        xuatKhoService.saveXuatKho(xuatKho);
+
+        return "redirect:/ke-toan/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-xuat-kho/xoa/{maXuatKho}")
+    public String deleteXuatKhoKT(@PathVariable Long maXuatKho) {
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(0L);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() - xuatKhoService.getXuatKho(maXuatKho).getTongSoTien());
+        xuatKhoService.deleteXuatKho(maXuatKho);
+        List<ChiTietXuatKho> chiTietXuatKhos = chiTietXuatKhoRepository.findByMaXuatKho(maXuatKho);
+        for (ChiTietXuatKho c : chiTietXuatKhos) {
+            SanPham sp = sanPhamService.getSanPham(c.getMaSanPham());
+            sp.setSoLuongTrongKho(sp.getSoLuongTrongKho() + c.getSoLuong());
+            sanPhamService.saveSanPham(sp);
+            chiTietXuatKhoRepository.delete(c);
+        }
+
+        return "redirect:/ke-toan/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-xuat-kho/chi-tiet/{maXuatKho}")
+    public String showDetailXuatKhoKT(@PathVariable Long maXuatKho, Model model) {
+        List<ChiTietXuatKho> listChiTiet = chiTietXuatKhoRepository.findByMaXuatKho(maXuatKho);
+        model.addAttribute("listChiTiet", listChiTiet);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        return "kt_chi_tiet_xuat_kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-xuat-kho/chi-tiet/xoa/{id}")
+    public String deleteChiTietXuatKhoKT(@PathVariable Long id) {
+        ChiTietXuatKho chiTietXuatKho = chiTietXuatKhoService.getChiTietXuatKho(id);
+        SanPham sanPham = sanPhamService.getSanPham(chiTietXuatKho.getMaSanPham());
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + chiTietXuatKho.getSoLuong());
+        sanPhamService.saveSanPham(sanPham);
+
+        XuatKho xuatKho = xuatKhoService.getXuatKho(chiTietXuatKho.getMaXuatKho());
+        xuatKho.setTongSoTien(xuatKho.getTongSoTien() - chiTietXuatKho.getDonGia());
+        xuatKhoService.saveXuatKho(xuatKho);
+
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(0L);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() + chiTietXuatKho.getSoLuong() * chiTietXuatKho.getDonGia());
+
+        chiTietXuatKhoService.deleteChiTietXuatKho(id);
+
+        return "redirect:/ke-toan/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/ke-toan/danh-sach-xuat-kho/them-san-pham/{maXuatKho}")
+    public String showAddChiTietXuatKhoKT(@PathVariable Long maXuatKho, Model model) {
+        idXuatKho = maXuatKho;
+        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+        List<SanPham> listSanPhamConLai = new ArrayList<>();
+        for(SanPham sanPham : listSanPham){
+            if(sanPham.getSoLuongTrongKho() > 0){
+                listSanPhamConLai.add(sanPham);
+            }
+        }
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+        model.addAttribute("listSanPham", listSanPhamConLai);
+        model.addAttribute("sanpham", new SanPham());
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+
+        List<String> listHangDau = new ArrayList<>();
+        List<String> listHangAcQuy = new ArrayList<>();
+        List<String> listHangLop = new ArrayList<>();
+        List<String> listHangPhuTung = new ArrayList<>();
+
+        for (SanPham sp : listSanPham) {
+            if (sp.getLoaiSanPham().equals("Lốp")) {
+                if (!listHangLop.contains(sp.getHangSanPham())) {
+                    listHangLop.add(sp.getHangSanPham());
+                }
+            } else if (sp.getLoaiSanPham().equals("Dầu")) {
+                if (!listHangDau.contains(sp.getHangSanPham())) {
+                    listHangDau.add(sp.getHangSanPham());
+                }
+            } else if (sp.getLoaiSanPham().equals("Ắc quy")) {
+                if (!listHangAcQuy.contains(sp.getHangSanPham())) {
+                    listHangAcQuy.add(sp.getHangSanPham());
+                }
+            } else if (sp.getLoaiSanPham().equals("Phụ tùng")) {
+                if (!listHangPhuTung.contains(sp.getHangSanPham())) {
+                    listHangPhuTung.add(sp.getHangSanPham());
+                }
+            }
+        }
+
+        listHangDau.forEach(sp -> System.out.println(sp));
+
+        model.addAttribute("listLop", listHangLop);
+        model.addAttribute("listDau", listHangDau);
+        model.addAttribute("listAcQuy", listHangAcQuy);
+        model.addAttribute("listPhuTung", listHangPhuTung);
+
+
+        return "kt_them_chi_tiet_xuat_kho";
+    }
+
+    @PostMapping("/ke-toan/danh-sach-xuat-kho/them-san-pham")
+    public String addChiTietXuatKhoKT(@ModelAttribute("sanpham") SanPham sanPham, @RequestParam("selectedObject") String tenSanPham) {
+//        System.out.println(tenSanPham);
+        SanPham existedSanPham = sanPhamRepository.ifSanPhamExisted(tenSanPham, sanPham.getHangSanPham());
+        existedSanPham.setSoLuongTrongKho(existedSanPham.getSoLuongTrongKho() - sanPham.getSoLuong());
+        sanPhamService.updateSanPham(existedSanPham);
+
+        ChiTietXuatKho chiTietXuatKho = chiTietXuatKhoRepository.ifChiTietExistedSanPham(sanPham.getMaSanPham());
+
+        if (chiTietXuatKho == null) {
+            ChiTietXuatKho newchiTietXuatKho = new ChiTietXuatKho();
+            newchiTietXuatKho.setMaXuatKho(idXuatKho);
+            newchiTietXuatKho.setMaSanPham(existedSanPham.getMaSanPham());
+            newchiTietXuatKho.setSoLuong(sanPham.getSoLuong());
+            newchiTietXuatKho.setDonGia(existedSanPham.getGiaXuat());
+            System.out.println(newchiTietXuatKho.getDonGia());
+            chiTietXuatKhoService.saveChiTietXuatKho(newchiTietXuatKho);
+        } else {
+            chiTietXuatKho.setSoLuong(chiTietXuatKho.getSoLuong() + sanPham.getSoLuong());
+            chiTietXuatKho.setDonGia(sanPham.getGiaXuat());
+
+            chiTietXuatKhoService.updateChiTietXuatKho(chiTietXuatKho);
+        }
+
+        XuatKho xuatKho = xuatKhoService.getXuatKho(idXuatKho);
+        List<ChiTietXuatKho> chiTietXuatKhos = chiTietXuatKhoRepository.findByMaXuatKho(idXuatKho);
+        Long sum = 0L;
+        for (ChiTietXuatKho c : chiTietXuatKhos) {
+            sum += c.getDonGia() * c.getSoLuong();
+        }
+        xuatKho.setTongSoTien(sum);
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(0L);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() + existedSanPham.getGiaXuat() * sanPham.getSoLuong());
+        taiKhoanService.saveTaiKhoan(tkAdmin);
+        xuatKhoService.saveXuatKho(xuatKho);
+
+        return "redirect:/ke-toan/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/ke-toan/dat-hang")
+    public String showDanhSachDatHangKT(Model model){
+        model.addAttribute("listDatHang", datHangService.getAllDatHang());
+
+
+        return "kt_danh_sach_dat_hang";
+    }
+
+    @GetMapping("/ke-toan/dat-hang/xoa/{maDatHang}")
+    public String deleteDatHangKT(@PathVariable Long maDatHang){
+        DatHang datHang = datHangService.getDatHang(maDatHang);
+        SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
+        sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + datHang.getSoLuong());
+
+        datHangService.deleteDatHang(maDatHang);
+
+        return "redirect:/ke-toan/dat-hang";
+    }
+
+    @GetMapping("/ke-toan/dat-hang/thanh-toan/{maDatHang}")
+    public String thanhToanDatHangKT(@PathVariable Long maDatHang){
+        DatHang datHang = datHangService.getDatHang(maDatHang);
+        SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
+        XuatKho xuatKho = new XuatKho();
+        xuatKho.setMaKhachHang(datHang.getMaKhachHang());
+        xuatKho.setTongSoTien(datHang.getTongTien());
+        xuatKho.setMaNhanVien(idDangNhap);
+        xuatKho.setNgayNhap(datHang.getNgayDat());
+        xuatKhoService.saveXuatKho(xuatKho);
+        ChiTietXuatKho chiTietXuatKho = new ChiTietXuatKho();
+        chiTietXuatKho.setDonGia(sanPham.getGiaXuat());
+        chiTietXuatKho.setSoLuong(datHang.getSoLuong());
+        chiTietXuatKho.setMaXuatKho(xuatKho.getMaXuatKho());
+        chiTietXuatKho.setMaSanPham(datHang.getMaSanPham());
+        chiTietXuatKhoService.saveChiTietXuatKho(chiTietXuatKho);
+
+        datHangService.deleteDatHang(maDatHang);
+
+
+        return "redirect:/ke-toan/dat-hang";
+    }
+
     // ---------------------------Chức năng phụ------------------------------
     public String getLastName(String name) {
         String[] names = name.split(" ");
