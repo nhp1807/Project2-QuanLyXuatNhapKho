@@ -104,30 +104,61 @@ public class AppController {
         return "redirect:/login";
     }
 
+//    List<SanPham> listSanPham;
+//        if (keyword != null) {
+//        listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
+//    } else {
+//        listSanPham = sanPhamService.getAllSanPham();
+//    }
+//
+//        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+//        model.addAttribute("listSanPham", listSanPham);
     @GetMapping("/")
-    public String index(Model model){
+    public String index(Model model, @Param("keyword") String keyword){
         List<SanPham> listLop = new ArrayList<>();
         List<SanPham> listDau = new ArrayList<>();
         List<SanPham> listAcQuy = new ArrayList<>();
         List<SanPham> listPhuTung = new ArrayList<>();
 
-        for (SanPham sanPham : sanPhamService.getAllSanPham()) {
-            if (sanPham.getLoaiSanPham().equals("Lốp")) {
-                listLop.add(sanPham);
-            } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
-                listDau.add(sanPham);
-            } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
-                listAcQuy.add(sanPham);
-            } else {
-                listPhuTung.add(sanPham);
+        if(keyword != null){
+            for (SanPham sanPham : sanPhamRepository.findByTenSanPhamContaining(keyword)) {
+                if (sanPham.getLoaiSanPham().equals("Lốp")) {
+                    listLop.add(sanPham);
+                } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
+                    listDau.add(sanPham);
+                } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
+                    listAcQuy.add(sanPham);
+                } else {
+                    listPhuTung.add(sanPham);
+                }
             }
+
+            model.addAttribute("listLop", listLop);
+            model.addAttribute("listLop", listLop);
+            model.addAttribute("listDau", listDau);
+            model.addAttribute("listAcQuy", listAcQuy);
+            model.addAttribute("listPhuTung", listPhuTung);
+        }else{
+            for (SanPham sanPham : sanPhamService.getAllSanPham()) {
+                if (sanPham.getLoaiSanPham().equals("Lốp")) {
+                    listLop.add(sanPham);
+                } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
+                    listDau.add(sanPham);
+                } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
+                    listAcQuy.add(sanPham);
+                } else {
+                    listPhuTung.add(sanPham);
+                }
+            }
+
+            model.addAttribute("listLop", listLop);
+            model.addAttribute("listLop", listLop);
+            model.addAttribute("listDau", listDau);
+            model.addAttribute("listAcQuy", listAcQuy);
+            model.addAttribute("listPhuTung", listPhuTung);
         }
 
-        model.addAttribute("listLop", listLop);
-        model.addAttribute("listLop", listLop);
-        model.addAttribute("listDau", listDau);
-        model.addAttribute("listAcQuy", listAcQuy);
-        model.addAttribute("listPhuTung", listPhuTung);
+
         return "index";
     }
 
@@ -828,8 +859,24 @@ public class AppController {
                 maxSpent = map.getValue();
             }
         }
-
         model.addAttribute("maxCustomer", maxSpent);
+
+        // Liệt kê hằng ngày bán được bao nhiêu tiền
+        Map<String, Long> daySpentsXuat = new HashMap<>();
+        for (XuatKho xk : listXuatKho){
+            daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
+        }
+
+        model.addAttribute("daySpentsXuat", daySpentsXuat);
+
+        // Liệt kê hàng ngày nhập bao nhiêu tiền
+        List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+        Map<String, Long> daySpentsNhap = new HashMap();
+        for (NhapKho nk : listNhapKho){
+            daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
+        }
+
+        model.addAttribute("daySpentsNhap", daySpentsNhap);
 
         // Tìm hàng bán được nhiều nhất
         int maxProductCount = 0;
@@ -847,7 +894,6 @@ public class AppController {
 
         model.addAttribute("maxProductCount", maxProductCount);
 
-        // TODO: Tìm nhà cung cấp cung cấp nhiều sản phẩm nhất
         // TODO: Tìm nhân viên bán được nhiều hàng nhất
 
         // Tìm tiền nhập, xuất, lãi
@@ -863,6 +909,8 @@ public class AppController {
         model.addAttribute("tongTienChi", tongTienChi);
         model.addAttribute("tongTienThu", tongTienThu);
         model.addAttribute("tongTienLai", tongTienLai);
+
+
 
         return "ad_thong_ke_xuat_kho";
     }

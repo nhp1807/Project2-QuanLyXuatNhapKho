@@ -46,16 +46,16 @@
     <img src="/image/banner.jpg" style="width: 90%; margin: auto;" alt="">
 </div>
 
-<!--<div class="container mt-4">-->
-<!--    <div class="form-group">-->
-<!--        <label for="categorySelect">Tìm kiếm theo:</label>-->
-<!--        <select class="form-control" id="categorySelect">-->
-<!--            <option value="lop">Lốp</option>-->
-<!--            <option value="dau">Dầu</option>-->
-<!--            <option value="ac-quy">Ắc quy</option>-->
-<!--        </select>-->
-<!--    </div>-->
-<!--</div>-->
+<div class="container mt-4">
+    <div class="form-group">
+        <label for="categorySelect">Tìm kiếm theo:</label>
+        <select class="form-control" id="categorySelect">
+            <option value="lop">Lốp</option>
+            <option value="dau">Dầu</option>
+            <option value="ac-quy">Ắc quy</option>
+        </select>
+    </div>
+</div>
 
 <!--&lt;!&ndash; Main Content &ndash;&gt;-->
 <!--<div class="container mt-4">-->
@@ -227,89 +227,95 @@
         <h1>Danh sách sản phẩm</h1>
     </div>
 
-    <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá lốp</div>
+    <section id="lop">
+        <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá lốp</div>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="align-middle text-center col-1">ID</th>
+                <th class="align-middle text-center col-4">Tên sản phẩm</th>
+                <th class="align-middle text-center col-3">Thông tin</th>
+                <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sanpham: ${listLop}">
+                <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
+                <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
+                <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
+                <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th class="align-middle text-center col-1">ID</th>
-            <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-3">Thông tin</th>
-            <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="sanpham: ${listLop}">
-            <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
-            <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
-        </tr>
-        </tbody>
-    </table>
+    <section id="dau">
+        <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá dầu</div>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="align-middle text-center col-1">ID</th>
+                <th class="align-middle text-center col-4">Tên sản phẩm</th>
+                <th class="align-middle text-center col-3">Thông tin</th>
+                <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sanpham: ${listDau}">
+                <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
+                <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
+                <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
+                <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
-    <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá dầu</div>
+    <section id="ac-quy">
+        <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá ắc quy</div>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="align-middle text-center col-1">ID</th>
+                <th class="align-middle text-center col-4">Tên sản phẩm</th>
+                <th class="align-middle text-center col-3">Thông tin</th>
+                <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sanpham: ${listAcQuy}">
+                <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
+                <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
+                <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
+                <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th class="align-middle text-center col-1">ID</th>
-            <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-3">Thông tin</th>
-            <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="sanpham: ${listDau}">
-            <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
-            <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
-        </tr>
-        </tbody>
-    </table>
+    <section id="phu-tung">
+        <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá phụ tùng</div>
+        <table class="table table-striped table-bordered table-hover">
+            <thead>
+            <tr>
+                <th class="align-middle text-center col-1">ID</th>
+                <th class="align-middle text-center col-4">Tên sản phẩm</th>
+                <th class="align-middle text-center col-3">Thông tin</th>
+                <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="sanpham: ${listPhuTung}">
+                <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
+                <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
+                <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
+                <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 
-    <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá ắc quy</div>
 
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th class="align-middle text-center col-1">ID</th>
-            <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-3">Thông tin</th>
-            <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="sanpham: ${listAcQuy}">
-            <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
-            <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
-        </tr>
-        </tbody>
-    </table>
-
-    <div class="table-header" style="font-size: 2rem; margin-bottom: 20px">Bảng giá phụ tùng</div>
-
-    <table class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th class="align-middle text-center col-1">ID</th>
-            <th class="align-middle text-center col-4">Tên sản phẩm</th>
-            <th class="align-middle text-center col-3">Thông tin</th>
-            <th class="align-middle text-center col-2">Đơn giá (VNĐ)</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="sanpham: ${listPhuTung}">
-            <th class="align-middle col-1 text-center" th:text="${sanpham.maSanPham}"></th>
-            <th class="align-middle col-4" th:text="${sanpham.tenSanPham}"></th>
-            <th class="align-middle col-3" th:text="${sanpham.thongTinSanPham}"></th>
-            <th class="align-middle col-2 text-center" th:text="${sanpham.giaXuat}"></th>
-        </tr>
-        </tbody>
-    </table>
 </div>
 
 
@@ -334,23 +340,26 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!--<script>-->
-<!--    // JavaScript to handle category selection-->
-<!--    document.getElementById('categorySelect').addEventListener('change', function () {-->
-<!--        var selectedCategory = this.value;-->
-<!--        document.getElementById('lop').style.display = 'none';-->
-<!--        document.getElementById('dau').style.display = 'none';-->
-<!--        document.getElementById('ac-quy').style.display = 'none';-->
+<script>
+    // JavaScript to handle category selection
+    document.getElementById('categorySelect').addEventListener('change', function () {
+        var selectedCategory = this.value;
+        document.getElementById('lop').style.display = 'none';
+        document.getElementById('dau').style.display = 'none';
+        document.getElementById('ac-quy').style.display = 'none';
+        document.getElementById('phu-tung').style.display = 'none';
 
-<!--        if (selectedCategory === 'lop') {-->
-<!--            document.getElementById('lop').style.display = 'block';-->
-<!--        } else if (selectedCategory === 'dau') {-->
-<!--            document.getElementById('dau').style.display = 'block';-->
-<!--        } else if (selectedCategory === 'ac-quy') {-->
-<!--            document.getElementById('ac-quy').style.display = 'block';-->
-<!--        }-->
-<!--    });-->
-<!--</script>-->
+        if (selectedCategory === 'lop') {
+            document.getElementById('lop').style.display = 'block';
+        } else if (selectedCategory === 'dau') {
+            document.getElementById('dau').style.display = 'block';
+        } else if (selectedCategory === 'ac-quy') {
+            document.getElementById('ac-quy').style.display = 'block';
+        } else if (selectedCategory === 'phu-tung') {
+            document.getElementById('phu-tung').style.display = 'block';
+        }
+    });
+</script>
 </body>
 
 </html>

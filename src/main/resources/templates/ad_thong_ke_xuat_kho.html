@@ -47,20 +47,26 @@
 </div>
 
 <div class="content">
-    <div style="display: flex; justify-content: end">
-        <form th:action="@{/admin/danh-sach-xuat-kho}">
-            <input type="text" name="keyword" placeholder="Nhập thông tin">
-            <input type="submit" value="Tìm kiếm">
-        </form>
-    </div>
     <div class="content-header">
-        <h1>Danh sách xuất kho</h1>
+        <h1>Thống kê xuất kho</h1>
     </div>
 
 
     <div style="display: flex">
         Khách hàng chi tiêu nhiều nhất:
         <div th:text="${maxCustomer}">
+        </div>
+    </div>
+
+    <div>
+        Số hàng bán ra theo từng ngày:
+        <div th:text="${daySpentsXuat}">
+        </div>
+    </div>
+
+    <div>
+        Số hàng nhập vào theo từng ngày:
+        <div th:text="${daySpentsNhap   }">
         </div>
     </div>
 
