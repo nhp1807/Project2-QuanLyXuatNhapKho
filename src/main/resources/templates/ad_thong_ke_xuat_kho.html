@@ -66,7 +66,7 @@
 
     <div>
         Số hàng nhập vào theo từng ngày:
-        <div th:text="${daySpentsNhap   }">
+        <div th:text="${daySpentsNhap}">
         </div>
     </div>
 
@@ -108,32 +108,6 @@
         </div>
         VNĐ
     </div>
-
-    <table id="dtHorizontalVerticalExample" class="table table-striped table-bordered table-hover">
-        <thead>
-        <tr>
-            <th class="text-center align-middle col-1">ID</th>
-            <th class="text-center align-middle col-1">Mã nhân viên</th>
-            <th class="text-center align-middle col-1">Mã khách hàng</th>
-            <th class="text-center align-middle col-3">Ngày xuất</th>
-            <th class="text-center align-middle col-2">Tổng số tiền</th>
-            <th class="text-center align-middle col-4">Chức năng</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="xuatkho: ${listXuatKho}">
-            <th class="align-middle col-1 text-center" th:text="${xuatkho.maXuatKho}"></th>
-            <th class="align-middle col-1 text-center" th:text="${xuatkho.maNhanVien}"></th>
-            <th class="align-middle col-1 text-center" th:text="${xuatkho.maKhachHang}"></th>
-            <th class="align-middle col-3 text-center" th:text="${xuatkho.ngayNhap}"></th>
-            <th class="align-middle col-2 text-center" th:text="${xuatkho.tongSoTien}"></th>
-            <th class="text-center col-4">
-                <a th:href="@{/admin/danh-sach-xuat-kho/chi-tiet/{maXuatKho}(maXuatKho=${xuatkho.maXuatKho})}"
-                   class="btn btn-primary">Chi tiết</a>
-            </th>
-        </tr>
-        </tbody>
-    </table>
 </div>
 
 

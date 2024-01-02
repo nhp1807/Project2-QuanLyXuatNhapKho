@@ -871,7 +871,7 @@ public class AppController {
 
         // Liệt kê hàng ngày nhập bao nhiêu tiền
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
-        Map<String, Long> daySpentsNhap = new HashMap();
+        Map<String, Long> daySpentsNhap = new HashMap<>();
         for (NhapKho nk : listNhapKho){
             daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
         }
@@ -913,6 +913,23 @@ public class AppController {
 
 
         return "ad_thong_ke_xuat_kho";
+    }
+
+    /**
+     * Test graph
+     * @return
+     */
+    @GetMapping("/chart")
+    public String showChart(Model model) {
+        // Dummy data - replace this with your data retrieval logic
+        Map<String, Integer> dataMap = new LinkedHashMap<>();
+        dataMap.put("Label 1", 10);
+        dataMap.put("Label 2", 20);
+        dataMap.put("Label 3", 30);
+
+        model.addAttribute("dataMap", dataMap);
+
+        return "chart"; // Assuming your HTML/Thymeleaf file is named 'chart.html'
     }
 
     // TODO:
