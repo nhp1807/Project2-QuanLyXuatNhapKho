@@ -51,6 +51,13 @@
         <h1>Thống kê xuất kho</h1>
     </div>
 
+    <div style="display: flex; justify-content: center; margin-bottom: 50px">
+        <form th:action="@{/admin/thong-ke/xuat-kho}">
+            <input type="date" name="start" placeholder="Từ ngày">
+            <input type="date" name="end" placeholder="Đến ngày">
+            <input type="submit" value="Tìm kiếm">
+        </form>
+    </div>
 
     <div style="display: flex">
         Khách hàng chi tiêu nhiều nhất:

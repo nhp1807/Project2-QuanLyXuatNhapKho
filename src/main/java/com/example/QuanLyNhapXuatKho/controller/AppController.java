@@ -2,6 +2,8 @@ package com.example.QuanLyNhapXuatKho.controller;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.example.QuanLyNhapXuatKho.entity.*;
@@ -436,7 +438,7 @@ public class AppController {
             listSanPham = sanPhamService.getAllSanPham();
         }
 
-        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+        Collections.sort(listSanPham, Comparator.comparing(SanPham::getLoaiSanPham));
         model.addAttribute("listSanPham", listSanPham);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -841,78 +843,159 @@ public class AppController {
     }
 
     @GetMapping("/admin/thong-ke/xuat-kho")
-    public String showThongKeXuatKhoAdmin(Model model) {
-        model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
-        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-        model.addAttribute("currentAccount", getLastName(currentName));
+    public String showThongKeXuatKhoAdmin(Model model, @Param("start") String start, @Param("end") String end) {
+        if(start != null && end != null){
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            System.out.println(1);
+            System.out.println(start + " : " + end);
 
-        // Tìm khách mua nhiều nhất
-        List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
-        Map<Long, Long> customerSpent = new HashMap<>();
-        for (XuatKho xk : listXuatKho) {
-            customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
-        }
+            model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
 
-        Long maxSpent = 0L;
-        for (Map.Entry<Long, Long> map : customerSpent.entrySet()) {
-            if (map.getValue() > maxSpent) {
-                maxSpent = map.getValue();
+            // Tìm khách mua nhiều nhất
+            List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+            Map<Long, Long> customerSpent = new HashMap<>();
+            for (XuatKho xk : listXuatKho) {
+                if(LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
+                    customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
+                }
             }
-        }
-        model.addAttribute("maxCustomer", maxSpent);
 
-        // Liệt kê hằng ngày bán được bao nhiêu tiền
-        Map<String, Long> daySpentsXuat = new HashMap<>();
-        for (XuatKho xk : listXuatKho){
-            daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
-        }
-
-        model.addAttribute("daySpentsXuat", daySpentsXuat);
-
-        // Liệt kê hàng ngày nhập bao nhiêu tiền
-        List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
-        Map<String, Long> daySpentsNhap = new HashMap<>();
-        for (NhapKho nk : listNhapKho){
-            daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
-        }
-
-        model.addAttribute("daySpentsNhap", daySpentsNhap);
-
-        // Tìm hàng bán được nhiều nhất
-        int maxProductCount = 0;
-        List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
-        Map<Long, Integer> productSellCount = new HashMap<>();
-        for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
-            productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
-        }
-
-        for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
-            if (map.getValue() > maxProductCount) {
-                maxProductCount = map.getValue();
+            Long maxSpent = 0L;
+            for (Map.Entry<Long, Long> map : customerSpent.entrySet()) {
+                if (map.getValue() > maxSpent) {
+                    maxSpent = map.getValue();
+                }
             }
+            model.addAttribute("maxCustomer", maxSpent);
+
+            // Liệt kê hằng ngày bán được bao nhiêu tiền
+            Map<String, Long> daySpentsXuat = new HashMap<>();
+            for (XuatKho xk : listXuatKho){
+                if(LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
+                    daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
+                }
+            }
+
+            model.addAttribute("daySpentsXuat", daySpentsXuat);
+
+            // Liệt kê hàng ngày nhập bao nhiêu tiền
+            List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+            Map<String, Long> daySpentsNhap = new HashMap<>();
+            for (NhapKho nk : listNhapKho){
+                if(LocalDate.parse(nk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(nk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
+                    daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
+                }
+            }
+
+            model.addAttribute("daySpentsNhap", daySpentsNhap);
+
+            // Tìm hàng bán được nhiều nhất
+            int maxProductCount = 0;
+            List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
+            Map<Long, Integer> productSellCount = new HashMap<>();
+            for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
+                productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
+            }
+
+            for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
+                if (map.getValue() > maxProductCount) {
+                    maxProductCount = map.getValue();
+                }
+            }
+
+            model.addAttribute("maxProductCount", maxProductCount);
+
+            // TODO: Tìm nhân viên bán được nhiều hàng nhất
+
+            // Tìm tiền nhập, xuất, lãi
+            int numberOfHoaDonXuat = xuatKhoService.getAllXuatKho().size();
+            int numberOfHoaDonNhap = nhapKhoService.getAllNhapKho().size();
+
+            model.addAttribute("numberOfHoaDonXuat", numberOfHoaDonXuat);
+            model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
+            Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
+            Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
+            Long tongTienLai= tongTienThu - tongTienChi;
+
+            model.addAttribute("tongTienChi", tongTienChi);
+            model.addAttribute("tongTienThu", tongTienThu);
+            model.addAttribute("tongTienLai", tongTienLai);
+
+            return "ad_thong_ke_xuat_kho";
+        }else {
+            System.out.println(2);
+            model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+
+            // Tìm khách mua nhiều nhất
+            List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
+            Map<Long, Long> customerSpent = new HashMap<>();
+            for (XuatKho xk : listXuatKho) {
+                customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
+            }
+
+            Long maxSpent = 0L;
+            for (Map.Entry<Long, Long> map : customerSpent.entrySet()) {
+                if (map.getValue() > maxSpent) {
+                    maxSpent = map.getValue();
+                }
+            }
+            model.addAttribute("maxCustomer", maxSpent);
+
+            // Liệt kê hằng ngày bán được bao nhiêu tiền
+            Map<String, Long> daySpentsXuat = new HashMap<>();
+            for (XuatKho xk : listXuatKho){
+                daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
+            }
+
+            model.addAttribute("daySpentsXuat", daySpentsXuat);
+
+            // Liệt kê hàng ngày nhập bao nhiêu tiền
+            List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+            Map<String, Long> daySpentsNhap = new HashMap<>();
+            for (NhapKho nk : listNhapKho){
+                daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
+            }
+
+            model.addAttribute("daySpentsNhap", daySpentsNhap);
+
+            // Tìm hàng bán được nhiều nhất
+            int maxProductCount = 0;
+            List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
+            Map<Long, Integer> productSellCount = new HashMap<>();
+            for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
+                productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
+            }
+
+            for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
+                if (map.getValue() > maxProductCount) {
+                    maxProductCount = map.getValue();
+                }
+            }
+
+            model.addAttribute("maxProductCount", maxProductCount);
+
+            // TODO: Tìm nhân viên bán được nhiều hàng nhất
+
+            // Tìm tiền nhập, xuất, lãi
+            int numberOfHoaDonXuat = xuatKhoService.getAllXuatKho().size();
+            int numberOfHoaDonNhap = nhapKhoService.getAllNhapKho().size();
+
+            model.addAttribute("numberOfHoaDonXuat", numberOfHoaDonXuat);
+            model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
+            Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
+            Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
+            Long tongTienLai= tongTienThu - tongTienChi;
+
+            model.addAttribute("tongTienChi", tongTienChi);
+            model.addAttribute("tongTienThu", tongTienThu);
+            model.addAttribute("tongTienLai", tongTienLai);
+
+            return "ad_thong_ke_xuat_kho";
         }
-
-        model.addAttribute("maxProductCount", maxProductCount);
-
-        // TODO: Tìm nhân viên bán được nhiều hàng nhất
-
-        // Tìm tiền nhập, xuất, lãi
-        int numberOfHoaDonXuat = xuatKhoService.getAllXuatKho().size();
-        int numberOfHoaDonNhap = nhapKhoService.getAllNhapKho().size();
-
-        model.addAttribute("numberOfHoaDonXuat", numberOfHoaDonXuat);
-        model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
-        Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
-        Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
-        Long tongTienLai= tongTienThu - tongTienChi;
-
-        model.addAttribute("tongTienChi", tongTienChi);
-        model.addAttribute("tongTienThu", tongTienThu);
-        model.addAttribute("tongTienLai", tongTienLai);
-
-
-
-        return "ad_thong_ke_xuat_kho";
     }
 
     /**
@@ -973,6 +1056,9 @@ public class AppController {
         chiTietXuatKho.setMaXuatKho(xuatKho.getMaXuatKho());
         chiTietXuatKho.setMaSanPham(datHang.getMaSanPham());
         chiTietXuatKhoService.saveChiTietXuatKho(chiTietXuatKho);
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(1L);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() + datHang.getTongTien());
+        taiKhoanService.saveTaiKhoan(tkAdmin);
 
         datHangService.deleteDatHang(maDatHang);
 
