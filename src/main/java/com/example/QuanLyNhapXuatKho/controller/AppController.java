@@ -106,7 +106,7 @@ public class AppController {
         return "redirect:/login";
     }
 
-//    List<SanPham> listSanPham;
+    //    List<SanPham> listSanPham;
 //        if (keyword != null) {
 //        listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
 //    } else {
@@ -116,13 +116,13 @@ public class AppController {
 //        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
 //        model.addAttribute("listSanPham", listSanPham);
     @GetMapping("/")
-    public String index(Model model, @Param("keyword") String keyword){
+    public String index(Model model, @Param("keyword") String keyword) {
         List<SanPham> listLop = new ArrayList<>();
         List<SanPham> listDau = new ArrayList<>();
         List<SanPham> listAcQuy = new ArrayList<>();
         List<SanPham> listPhuTung = new ArrayList<>();
 
-        if(keyword != null){
+        if (keyword != null) {
             for (SanPham sanPham : sanPhamRepository.findByTenSanPhamContaining(keyword)) {
                 if (sanPham.getLoaiSanPham().equals("Lốp")) {
                     listLop.add(sanPham);
@@ -140,7 +140,7 @@ public class AppController {
             model.addAttribute("listDau", listDau);
             model.addAttribute("listAcQuy", listAcQuy);
             model.addAttribute("listPhuTung", listPhuTung);
-        }else{
+        } else {
             for (SanPham sanPham : sanPhamService.getAllSanPham()) {
                 if (sanPham.getLoaiSanPham().equals("Lốp")) {
                     listLop.add(sanPham);
@@ -749,8 +749,8 @@ public class AppController {
         idXuatKho = maXuatKho;
         List<SanPham> listSanPham = sanPhamService.getAllSanPham();
         List<SanPham> listSanPhamConLai = new ArrayList<>();
-        for(SanPham sanPham : listSanPham){
-            if(sanPham.getSoLuongTrongKho() > 0){
+        for (SanPham sanPham : listSanPham) {
+            if (sanPham.getSoLuongTrongKho() > 0) {
                 listSanPhamConLai.add(sanPham);
             }
         }
@@ -844,193 +844,253 @@ public class AppController {
 
     @GetMapping("/admin/thong-ke/xuat-kho")
     public String showThongKeXuatKhoAdmin(Model model, @Param("start") String start, @Param("end") String end) {
-        if(start != null && end != null){
+        if (start != null && end != null) {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            System.out.println(1);
             System.out.println(start + " : " + end);
 
-            model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
             String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
             model.addAttribute("currentAccount", getLastName(currentName));
 
-            // Tìm khách mua nhiều nhất
+            // Tìm khách mua nhiều nhất, tổng số hoá đơn
             List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
             Map<Long, Long> customerSpent = new HashMap<>();
+            int numberOfHoaDonXuat = 0;
             for (XuatKho xk : listXuatKho) {
-                if(LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
+                if (LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))) {
                     customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
+                    numberOfHoaDonXuat++;
                 }
             }
 
-            Long maxSpent = 0L;
+            Long maxSpent = Collections.max(customerSpent.values());
+            Long maxSpentCustomer = null;
             for (Map.Entry<Long, Long> map : customerSpent.entrySet()) {
-                if (map.getValue() > maxSpent) {
-                    maxSpent = map.getValue();
+                if (Integer.parseInt(map.getValue().toString()) == Integer.parseInt(maxSpent.toString())) {
+                    maxSpentCustomer = map.getKey();
                 }
             }
-            model.addAttribute("maxCustomer", maxSpent);
 
             // Liệt kê hằng ngày bán được bao nhiêu tiền
             Map<String, Long> daySpentsXuat = new HashMap<>();
-            for (XuatKho xk : listXuatKho){
-                if(LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
+            for (XuatKho xk : listXuatKho) {
+                if (LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))) {
                     daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
                 }
             }
 
+            model.addAttribute("maxSpent", maxSpent);
+            if (maxSpentCustomer != null) {
+                model.addAttribute("maxCustomer", taiKhoanService.getTaiKhoan(maxSpentCustomer).getHoTen());
+            }
             model.addAttribute("daySpentsXuat", daySpentsXuat);
-
-            // Liệt kê hàng ngày nhập bao nhiêu tiền
-            List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
-            Map<String, Long> daySpentsNhap = new HashMap<>();
-            for (NhapKho nk : listNhapKho){
-                if(LocalDate.parse(nk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(nk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
-                    daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
-                }
-            }
-
-            model.addAttribute("daySpentsNhap", daySpentsNhap);
-
-            // Tìm hàng bán được nhiều nhất
-            int maxProductCount = 0;
-            List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
-            Map<Long, Integer> productSellCount = new HashMap<>();
-            for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
-                productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
-            }
-
-            for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
-                if (map.getValue() > maxProductCount) {
-                    maxProductCount = map.getValue();
-                }
-            }
-
-            model.addAttribute("maxProductCount", maxProductCount);
-
-            // TODO: Tìm nhân viên bán được nhiều hàng nhất
-
-            // Tìm tiền nhập, xuất, lãi
-            int numberOfHoaDonXuat = xuatKhoService.getAllXuatKho().size();
-            int numberOfHoaDonNhap = nhapKhoService.getAllNhapKho().size();
-
             model.addAttribute("numberOfHoaDonXuat", numberOfHoaDonXuat);
-            model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
-            Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
-            Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
-            Long tongTienLai= tongTienThu - tongTienChi;
-
-            model.addAttribute("tongTienChi", tongTienChi);
-            model.addAttribute("tongTienThu", tongTienThu);
-            model.addAttribute("tongTienLai", tongTienLai);
 
             return "ad_thong_ke_xuat_kho";
-        }else {
-            System.out.println(2);
-            model.addAttribute("listXuatKho", xuatKhoService.getAllXuatKho());
+        } else {
             String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
             model.addAttribute("currentAccount", getLastName(currentName));
 
-            // Tìm khách mua nhiều nhất
+            // Tìm khách mua nhiều nhất, tổng hoá đơn
             List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
             Map<Long, Long> customerSpent = new HashMap<>();
+            int numberOfHoaDonXuat = 0;
             for (XuatKho xk : listXuatKho) {
                 customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
+                numberOfHoaDonXuat++;
             }
 
-            Long maxSpent = 0L;
+            Long maxSpent = Collections.max(customerSpent.values());
+            Long maxSpentCustomer = null;
             for (Map.Entry<Long, Long> map : customerSpent.entrySet()) {
-                if (map.getValue() > maxSpent) {
-                    maxSpent = map.getValue();
+                if (Integer.parseInt(map.getValue().toString()) == Integer.parseInt(maxSpent.toString())) {
+                    maxSpentCustomer = map.getKey();
                 }
             }
-            model.addAttribute("maxCustomer", maxSpent);
 
             // Liệt kê hằng ngày bán được bao nhiêu tiền
             Map<String, Long> daySpentsXuat = new HashMap<>();
-            for (XuatKho xk : listXuatKho){
+            for (XuatKho xk : listXuatKho) {
                 daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
             }
 
+            model.addAttribute("maxSpent", maxSpent);
+            if (maxSpentCustomer != null) {
+                model.addAttribute("maxCustomer", taiKhoanService.getTaiKhoan(maxSpentCustomer).getHoTen());
+            }
             model.addAttribute("daySpentsXuat", daySpentsXuat);
-
-            // Liệt kê hàng ngày nhập bao nhiêu tiền
-            List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
-            Map<String, Long> daySpentsNhap = new HashMap<>();
-            for (NhapKho nk : listNhapKho){
-                daySpentsNhap.put(nk.getNgayNhap(), customerSpent.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
-            }
-
-            model.addAttribute("daySpentsNhap", daySpentsNhap);
-
-            // Tìm hàng bán được nhiều nhất
-            int maxProductCount = 0;
-            List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
-            Map<Long, Integer> productSellCount = new HashMap<>();
-            for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
-                productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
-            }
-
-            for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
-                if (map.getValue() > maxProductCount) {
-                    maxProductCount = map.getValue();
-                }
-            }
-
-            model.addAttribute("maxProductCount", maxProductCount);
-
-            // TODO: Tìm nhân viên bán được nhiều hàng nhất
-
-            // Tìm tiền nhập, xuất, lãi
-            int numberOfHoaDonXuat = xuatKhoService.getAllXuatKho().size();
-            int numberOfHoaDonNhap = nhapKhoService.getAllNhapKho().size();
-
             model.addAttribute("numberOfHoaDonXuat", numberOfHoaDonXuat);
-            model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
-            Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
-            Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
-            Long tongTienLai= tongTienThu - tongTienChi;
-
-            model.addAttribute("tongTienChi", tongTienChi);
-            model.addAttribute("tongTienThu", tongTienThu);
-            model.addAttribute("tongTienLai", tongTienLai);
 
             return "ad_thong_ke_xuat_kho";
         }
     }
 
-    /**
-     * Test graph
-     * @return
-     */
-    @GetMapping("/chart")
-    public String showChart(Model model) {
-        // Dummy data - replace this with your data retrieval logic
-        Map<String, Integer> dataMap = new LinkedHashMap<>();
-        dataMap.put("Label 1", 10);
-        dataMap.put("Label 2", 20);
-        dataMap.put("Label 3", 30);
+    @GetMapping("/admin/thong-ke/nhap-kho")
+    public String showThongKeNhapKhoAdmin(Model model, @Param("start") String start, @Param("end") String end) {
+        if (start != null && end != null) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
 
-        model.addAttribute("dataMap", dataMap);
+            // Liệt kê hàng ngày nhập bao nhiêu tiền
+            List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+            Map<String, Long> daySpentsNhap = new HashMap<>();
+            Map<Long, Integer> mapNcc = new HashMap<>();
+            int numberOfHoaDonNhap = 0;
+            for (NhapKho nk : listNhapKho) {
+                if (LocalDate.parse(nk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(nk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))) {
+                    daySpentsNhap.put(nk.getNgayNhap(), daySpentsNhap.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
+                    mapNcc.put(nk.getMaNhaCungCap(), mapNcc.getOrDefault(nk.getMaNhaCungCap(), 0) + 1);
+                    numberOfHoaDonNhap++;
+                }
+            }
 
-        return "chart"; // Assuming your HTML/Thymeleaf file is named 'chart.html'
+            int maxCungCap = Collections.max(mapNcc.values());
+            Long maxNcc = null;
+            for (Map.Entry<Long, Integer> entry : mapNcc.entrySet()) {
+                if (entry.getValue() == maxCungCap) {
+                    maxNcc = entry.getKey();
+                }
+            }
+            model.addAttribute("maxCungCap", maxCungCap);
+            if (maxNcc != null) {
+                model.addAttribute("maxNcc", nhaCungCapService.getNhaCungCap(maxNcc).getTenNhaCungCap());
+            }
+            model.addAttribute("daySpentsNhap", daySpentsNhap);
+            model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
+
+            return "ad_thong_ke_nhap_kho";
+        } else {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+
+            // Liệt kê hàng ngày nhập bao nhiêu tiền
+            List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+            Map<String, Long> daySpentsNhap = new HashMap<>();
+            Map<Long, Integer> mapNcc = new HashMap<>();
+            int numberOfHoaDonNhap = 0;
+            for (NhapKho nk : listNhapKho) {
+                daySpentsNhap.put(nk.getNgayNhap(), daySpentsNhap.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
+                mapNcc.put(nk.getMaNhaCungCap(), mapNcc.getOrDefault(nk.getMaNhaCungCap(), 0) + 1);
+                numberOfHoaDonNhap++;
+            }
+
+            int maxCungCap = Collections.max(mapNcc.values());
+            Long maxNcc = null;
+            for (Map.Entry<Long, Integer> entry : mapNcc.entrySet()) {
+                if (entry.getValue() == maxCungCap) {
+                    maxNcc = entry.getKey();
+                }
+            }
+            model.addAttribute("maxCungCap", maxCungCap);
+            if (maxNcc != null) {
+                model.addAttribute("maxNcc", nhaCungCapService.getNhaCungCap(maxNcc).getTenNhaCungCap());
+            }
+            model.addAttribute("daySpentsNhap", daySpentsNhap);
+            model.addAttribute("numberOfHoaDonNhap", numberOfHoaDonNhap);
+
+            return "ad_thong_ke_nhap_kho";
+        }
     }
 
-    // TODO:
     @GetMapping("/admin/thong-ke/san-pham")
-    public String showThongKeSanPhamAdmin(){
-        return "";
+    public String showThongKeSanPhamAdmin(Model model, @Param("start") String start, @Param("end") String end) {
+        if (start != null && end != null) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+
+            // Tìm hàng bán được nhiều nhất
+            List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
+            Map<Long, Integer> productSellCount = new HashMap<>();
+            for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
+                XuatKho xk = xuatKhoService.getXuatKho(ctxk.getMaXuatKho());
+                if(LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))){
+                    productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
+                }
+            }
+
+            int maxProductCount = Collections.max(productSellCount.values());
+            int minProductCount = Collections.min(productSellCount.values());
+            Long maxProduct = null;
+            Long minProduct = null;
+            for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
+                if (map.getValue() == maxProductCount) {
+                    maxProduct = map.getKey();
+                }
+                if(map.getValue() == minProductCount){
+                    minProduct = map.getKey();
+                }
+            }
+
+            model.addAttribute("maxProduct", sanPhamService.getSanPham(maxProduct).getTenSanPham());
+            model.addAttribute("maxProductCount", maxProductCount);
+            model.addAttribute("minProduct", sanPhamService.getSanPham(minProduct).getTenSanPham());
+            model.addAttribute("minProductCount", minProductCount);
+
+            // Tìm tiền nhập, xuất, lãi
+            Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
+            Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
+            Long tongTienLai = tongTienThu - tongTienChi;
+
+            model.addAttribute("tongTienChi", tongTienChi);
+            model.addAttribute("tongTienThu", tongTienThu);
+            model.addAttribute("tongTienLai", tongTienLai);
+
+            return "ad_thong_ke_san_pham";
+        } else {
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+
+            // Tìm hàng bán được nhiều nhất
+            List<ChiTietXuatKho> listChiTietXuatKho = chiTietXuatKhoService.getAllChiTietXuatKho();
+            Map<Long, Integer> productSellCount = new HashMap<>();
+            for (ChiTietXuatKho ctxk : listChiTietXuatKho) {
+                productSellCount.put(ctxk.getMaSanPham(), productSellCount.getOrDefault(ctxk.getMaSanPham(), 0) + ctxk.getSoLuong());
+            }
+
+            int maxProductCount = Collections.max(productSellCount.values());
+            int minProductCount = Collections.min(productSellCount.values());
+            Long maxProduct = null;
+            Long minProduct = null;
+            for (Map.Entry<Long, Integer> map : productSellCount.entrySet()) {
+                if (map.getValue() == maxProductCount) {
+                    maxProduct = map.getKey();
+                }
+                if(map.getValue() == minProductCount){
+                    minProduct = map.getKey();
+                }
+            }
+
+            model.addAttribute("maxProduct", sanPhamService.getSanPham(maxProduct).getTenSanPham());
+            model.addAttribute("maxProductCount", maxProductCount);
+            model.addAttribute("minProduct", sanPhamService.getSanPham(minProduct).getTenSanPham());
+            model.addAttribute("minProductCount", minProductCount);
+
+            // Tìm tiền nhập, xuất, lãi
+            Long tongTienChi = taiKhoanService.getTaiKhoan(1L).getTienXuat();
+            Long tongTienThu = taiKhoanService.getTaiKhoan(1L).getTienNhap();
+            Long tongTienLai = tongTienThu - tongTienChi;
+
+            model.addAttribute("tongTienChi", tongTienChi);
+            model.addAttribute("tongTienThu", tongTienThu);
+            model.addAttribute("tongTienLai", tongTienLai);
+
+            return "ad_thong_ke_san_pham";
+        }
     }
 
     @GetMapping("/admin/dat-hang")
-    public String showDanhSachDatHangAdmin(Model model){
+    public String showDanhSachDatHangAdmin(Model model) {
         model.addAttribute("listDatHang", datHangService.getAllDatHang());
-
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
 
         return "ad_danh_sach_dat_hang";
     }
 
     @GetMapping("/admin/dat-hang/xoa/{maDatHang}")
-    public String deleteDatHangAdmin(@PathVariable Long maDatHang){
+    public String deleteDatHangAdmin(@PathVariable Long maDatHang) {
         DatHang datHang = datHangService.getDatHang(maDatHang);
         SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
         sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + datHang.getSoLuong());
@@ -1041,7 +1101,7 @@ public class AppController {
     }
 
     @GetMapping("/admin/dat-hang/thanh-toan/{maDatHang}")
-    public String thanhToanDatHangAdmin(@PathVariable Long maDatHang){
+    public String thanhToanDatHangAdmin(@PathVariable Long maDatHang) {
         DatHang datHang = datHangService.getDatHang(maDatHang);
         SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
         XuatKho xuatKho = new XuatKho();
@@ -1175,12 +1235,12 @@ public class AppController {
     }
 
     @GetMapping("/khach-hang/lich-su")
-    public String showLichSu(Model model){
+    public String showLichSu(Model model) {
         List<XuatKho> listXuatKho = xuatKhoService.getAllXuatKho();
         List<XuatKho> listXuatKhoKH = new ArrayList<>();
 
-        for(XuatKho xk : listXuatKho){
-            if(xk.getMaKhachHang() == idDangNhap){
+        for (XuatKho xk : listXuatKho) {
+            if (xk.getMaKhachHang() == idDangNhap) {
                 listXuatKhoKH.add(xk);
             }
         }
@@ -1190,7 +1250,7 @@ public class AppController {
     }
 
     @GetMapping("/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}")
-    public String showDatHangKH(Model model, @PathVariable Long maSanPham){
+    public String showDatHangKH(Model model, @PathVariable Long maSanPham) {
         idSanPhamSelect = maSanPham;
         model.addAttribute("dathang", new DatHang());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -1199,7 +1259,7 @@ public class AppController {
     }
 
     @PostMapping("/khach-hang/dat-hang")
-    public String addDatHangKH(@ModelAttribute("dathang") DatHang datHang){
+    public String addDatHangKH(@ModelAttribute("dathang") DatHang datHang) {
         Long currentTime = System.currentTimeMillis();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         String formatedDate = format.format(new Date(currentTime));
@@ -1217,12 +1277,12 @@ public class AppController {
     }
 
     @GetMapping("/khach-hang/danh-sach-dat-hang")
-    public String showDanhSachDatHangKH(Model model){
+    public String showDanhSachDatHangKH(Model model) {
         List<DatHang> listDatHang = datHangService.getAllDatHang();
         List<DatHang> listDathangKH = new ArrayList<>();
 
-        for (DatHang datHang : listDatHang){
-            if(datHang.getMaKhachHang() == idDangNhap){
+        for (DatHang datHang : listDatHang) {
+            if (datHang.getMaKhachHang() == idDangNhap) {
                 listDathangKH.add(datHang);
             }
         }
@@ -1234,7 +1294,7 @@ public class AppController {
     }
 
     @GetMapping("/khach-hang/danh-sach-dat-hang/xoa/{maDatHang}")
-    public String deleteDatHangKH(@PathVariable Long maDatHang){
+    public String deleteDatHangKH(@PathVariable Long maDatHang) {
         // Tăng số lượng sản phẩm đó trong kho
         SanPham sanPham = sanPhamService.getSanPham(datHangService.getDatHang(maDatHang).getMaSanPham());
         sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + datHangService.getDatHang(maDatHang).getSoLuong());
@@ -1681,8 +1741,8 @@ public class AppController {
         idXuatKho = maXuatKho;
         List<SanPham> listSanPham = sanPhamService.getAllSanPham();
         List<SanPham> listSanPhamConLai = new ArrayList<>();
-        for(SanPham sanPham : listSanPham){
-            if(sanPham.getSoLuongTrongKho() > 0){
+        for (SanPham sanPham : listSanPham) {
+            if (sanPham.getSoLuongTrongKho() > 0) {
                 listSanPhamConLai.add(sanPham);
             }
         }
@@ -1768,7 +1828,7 @@ public class AppController {
     }
 
     @GetMapping("/ke-toan/dat-hang")
-    public String showDanhSachDatHangKT(Model model){
+    public String showDanhSachDatHangKT(Model model) {
         model.addAttribute("listDatHang", datHangService.getAllDatHang());
 
 
@@ -1776,7 +1836,7 @@ public class AppController {
     }
 
     @GetMapping("/ke-toan/dat-hang/xoa/{maDatHang}")
-    public String deleteDatHangKT(@PathVariable Long maDatHang){
+    public String deleteDatHangKT(@PathVariable Long maDatHang) {
         DatHang datHang = datHangService.getDatHang(maDatHang);
         SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
         sanPham.setSoLuongTrongKho(sanPham.getSoLuongTrongKho() + datHang.getSoLuong());
@@ -1787,7 +1847,7 @@ public class AppController {
     }
 
     @GetMapping("/ke-toan/dat-hang/thanh-toan/{maDatHang}")
-    public String thanhToanDatHangKT(@PathVariable Long maDatHang){
+    public String thanhToanDatHangKT(@PathVariable Long maDatHang) {
         DatHang datHang = datHangService.getDatHang(maDatHang);
         SanPham sanPham = sanPhamService.getSanPham(datHang.getMaSanPham());
         XuatKho xuatKho = new XuatKho();

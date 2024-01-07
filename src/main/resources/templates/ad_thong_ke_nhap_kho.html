@@ -52,7 +52,7 @@
     </div>
 
     <div style="display: flex; justify-content: center; margin-bottom: 50px">
-        <form th:action="@{/admin/thong-ke/xuat-kho}">
+        <form th:action="@{/admin/thong-ke/nhap-kho}">
             <input type="date" name="start" placeholder="Từ ngày">
             <input type="date" name="end" placeholder="Đến ngày">
             <input type="submit" value="Tìm kiếm">
@@ -60,20 +60,20 @@
     </div>
 
     <div style="display: flex">
-        Khách hàng chi tiêu nhiều nhất:
-        <div th:text="${maxCustomer}"></div>:
-        <div th:text="${maxSpent}"></div>VNĐ
+        Nhà cung cấp nhiều nhất:
+        <div th:text="${maxNcc}"></div>:
+        <div th:text="${maxCungCap}"></div>
     </div>
 
     <div style="display: flex">
-        Tổng số hóa đơn xuất:
-        <div th:text="${numberOfHoaDonXuat}">
+        Tổng số hóa đơn nhập:
+        <div th:text="${numberOfHoaDonNhap}">
         </div>
     </div>
 
     <div>
-        Số hàng bán ra theo từng ngày:
-        <div th:text="${daySpentsXuat}">
+        Số hàng nhập vào theo từng ngày:
+        <div th:text="${daySpentsNhap}">
         </div>
     </div>
 
@@ -85,9 +85,9 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="xuatkho: ${daySpentsXuat}">
-            <th class="align-middle" th:text="${xuatkho.key}"></th>
-            <th class="align-middle" th:text="${xuatkho.value}"></th>
+        <tr th:each="nhapkho: ${daySpentsNhap}">
+            <th class="align-middle" th:text="${nhapkho.key}"></th>
+            <th class="align-middle" th:text="${nhapkho.value}"></th>
 
         </tr>
         </tbody>
