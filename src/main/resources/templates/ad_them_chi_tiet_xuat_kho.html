@@ -40,6 +40,8 @@
                 th:href="@{/admin/dat-hang}">Danh sách đặt hàng</a></div>
         <div class="header-nav"><span class="material-symbols-outlined">apartment</span><a
                 th:href="@{/admin/danh-sach-nha-cung-cap}">Nhà cung cấp</a></div>
+        <div class="header-nav"><span class="material-symbols-outlined">analytics</span><a
+                th:href="@{/admin/thong-ke}">Thống kê</a></div>
         <div class="header-nav"><span class="material-symbols-outlined">logout</span><a th:href='@{/login}'>Đăng
             xuất</a>
         </div>
@@ -70,7 +72,7 @@
                 <div>
                     <p>Hãng sản phẩm</p>
                 </div>
-                <div><input type="text" th:field="*{hangSanPham}" class="information-section-input"></div>
+                <div><input type="text" th:field="*{hangSanPham}" class="information-section-input" required></div>
             </div>
 
 <!--            <div th:if="${sanpham.loaiSanPham == 'Lop'}">-->
@@ -113,7 +115,7 @@
                 <div>
                     <p>Số lượng</p>
                 </div>
-                <div><input type="number" th:field="*{soLuong}" class="information-section-input"></div>
+                <div><input type="number" th:field="*{soLuong}" class="information-section-input" required></div>
             </div>
 
 <!--            <div class="information-section">-->

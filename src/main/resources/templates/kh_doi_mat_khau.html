@@ -53,18 +53,18 @@
                 <div>
                     <p>Mật khẩu mới</p>
                 </div>
-                <div><input type="password" th:field="*{matKhau}" class="information-section-input"></div>
+                <div><input type="password" th:field="*{matKhau}" class="information-section-input" required></div>
             </div>
 
             <div class="information-section">
                 <div>
                     <p>Xác nhận mật khẩu</p>
                 </div>
-                <div><input type="password" th:field="*{reMatKhau}" class="information-section-input"></div>
+                <div><input type="password" th:field="*{reMatKhau}" class="information-section-input" required></div>
             </div>
 
             <div class="submit-button">
-                <button type="submit" class="btn btn-primary">Lưu</a>
+                <button type="submit" class="btn btn-primary">Lưu</button>
             </div>
 
             <div style="color: red;"></div>

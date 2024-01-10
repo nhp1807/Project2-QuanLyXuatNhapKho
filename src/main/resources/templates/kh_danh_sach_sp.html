@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/css/navbar_styles.css">
     <script src="../js/admin.js"></script>
 
-    <title>Danh sách sản phẩm</title>
+    <title>Sản phẩm</title>
 </head>
 
 <body>
@@ -69,7 +69,8 @@
             <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
-                   class="btn btn-primary">Đặt</a>
+                   class="btn btn-primary" th:if="${sanpham.soLuongTrongKho > 0}">Đặt</a>
+                <a class="btn btn-danger" th:unless="${sanpham.soLuongTrongKho > 0}">Hết</a>
             </th>
         </tr>
         </tbody>
@@ -97,7 +98,8 @@
             <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
-                   class="btn btn-primary">Đặt</a>
+                   class="btn btn-primary" th:if="${sanpham.soLuongTrongKho > 0}">Đặt</a>
+                <a class="btn btn-danger" th:unless="${sanpham.soLuongTrongKho > 0}">Hết</a>
             </th>
         </tr>
         </tbody>
@@ -125,7 +127,8 @@
             <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
-                   class="btn btn-primary">Đặt</a>
+                   class="btn btn-primary" th:if="${sanpham.soLuongTrongKho > 0}">Đặt</a>
+                <a class="btn btn-danger" th:unless="${sanpham.soLuongTrongKho > 0}">Hết</a>
             </th>
         </tr>
         </tbody>
@@ -153,8 +156,10 @@
             <th class="align-middle col-1 text-center" th:text="${sanpham.soLuongTrongKho}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-san-pham/dat-hang/{maSanPham}(maSanPham=${sanpham.maSanPham})}"
-                   class="btn btn-primary">Đặt</a>
+                   class="btn btn-primary" th:if="${sanpham.soLuongTrongKho > 0}">Đặt</a>
+                <a class="btn btn-danger" th:unless="${sanpham.soLuongTrongKho > 0}">Hết</a>
             </th>
+
         </tr>
         </tbody>
     </table>

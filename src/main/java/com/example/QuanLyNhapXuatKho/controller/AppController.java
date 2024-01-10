@@ -55,6 +55,7 @@ public class AppController {
 
     public Long idDangNhap, idSanPhamSelect;
     public boolean errPassword = false;
+    public boolean errThemXuatKho = false;
     public boolean errRegister = false;
     public Long idNhapKho, idXuatKho;
 
@@ -97,6 +98,7 @@ public class AppController {
         taiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
         taiKhoan.setSoDienThoai(taiKhoan.getSoDienThoai());
         taiKhoan.setMatKhau(passwordEncoder.encode(taiKhoan.getMatKhau()));
+        taiKhoan.setReMatKhau(taiKhoan.getMatKhau());
         taiKhoan.setDiemThuong(0);
         taiKhoan.setChucVu("Khách hàng");
         taiKhoan.setRole(Role.KHACHHANG);
@@ -106,15 +108,6 @@ public class AppController {
         return "redirect:/login";
     }
 
-    //    List<SanPham> listSanPham;
-//        if (keyword != null) {
-//        listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
-//    } else {
-//        listSanPham = sanPhamService.getAllSanPham();
-//    }
-//
-//        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
-//        model.addAttribute("listSanPham", listSanPham);
     @GetMapping("/")
     public String index(Model model, @Param("keyword") String keyword) {
         List<SanPham> listLop = new ArrayList<>();
@@ -679,6 +672,9 @@ public class AppController {
 
     @GetMapping("/admin/them-xuat-kho")
     public String showAddXuatKhoAdmin(Model model) {
+        if (errThemXuatKho == true) {
+            model.addAttribute("errThemXuatKho", "Số điện thoại không tồn tại!");
+        }
         model.addAttribute("xuatkho", new XuatKho());
         model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -689,6 +685,11 @@ public class AppController {
 
     @PostMapping("/admin/them-xuat-kho")
     public String addXuatKhoAdmin(@ModelAttribute("nhapkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
+        if(!taiKhoanRepository.existsBySoDienThoai(sdt)){
+            errThemXuatKho = true;
+            return "redirect:/admin/them-xuat-kho";
+        }
+
         xuatKho.setMaNhanVien(idDangNhap);
         xuatKho.setMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
         xuatKho.setNgayNhap(xuatKho.getNgayNhap());
@@ -1677,6 +1678,9 @@ public class AppController {
 
     @GetMapping("/ke-toan/them-xuat-kho")
     public String showAddXuatKhoKT(Model model) {
+        if (errThemXuatKho == true) {
+            model.addAttribute("errThemXuatKho", "Số điện thoại không tồn tại!");
+        }
         model.addAttribute("xuatkho", new XuatKho());
         model.addAttribute("listNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
@@ -1687,6 +1691,11 @@ public class AppController {
 
     @PostMapping("/ke-toan/them-xuat-kho")
     public String addXuatKhoKT(@ModelAttribute("nhapkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
+        if(!taiKhoanRepository.existsBySoDienThoai(sdt)){
+            errThemXuatKho = true;
+            return "redirect:/admin/them-xuat-kho";
+        }
+
         xuatKho.setMaNhanVien(idDangNhap);
         xuatKho.setMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
         xuatKho.setNgayNhap(xuatKho.getNgayNhap());
@@ -1831,6 +1840,11 @@ public class AppController {
         xuatKhoService.saveXuatKho(xuatKho);
 
         return "redirect:/ke-toan/danh-sach-xuat-kho";
+    }
+
+    @GetMapping("/ke-toan/thong-ke")
+    public String showThongKeKT(Model model){
+        return "kt_thong_ke";
     }
 
     @GetMapping("/ke-toan/dat-hang")

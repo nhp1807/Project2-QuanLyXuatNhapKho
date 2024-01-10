@@ -20,6 +20,7 @@ public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Long> {
     public TaiKhoan findByChucVu(String chucVu);
 
     boolean existsByTenTaiKhoan(String TenTaiKhoan);
+    boolean existsBySoDienThoai(String SoDienThoai);
 
     List<TaiKhoan> findByHoTenContaining(String keyword);
 }
