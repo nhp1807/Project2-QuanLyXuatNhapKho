@@ -856,6 +856,9 @@ public class AppController {
             Map<Long, Long> customerSpent = new HashMap<>();
             int numberOfHoaDonXuat = 0;
             for (XuatKho xk : listXuatKho) {
+                if(start.isEmpty() && end.isEmpty()){
+                    return "redirect:/admin/thong-ke/xuat-kho";
+                }
                 if (LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))) {
                     customerSpent.put(xk.getMaKhachHang(), customerSpent.getOrDefault(xk.getMaKhachHang(), 0L) + xk.getTongSoTien());
                     numberOfHoaDonXuat++;
@@ -937,6 +940,9 @@ public class AppController {
             Map<Long, Integer> mapNcc = new HashMap<>();
             int numberOfHoaDonNhap = 0;
             for (NhapKho nk : listNhapKho) {
+                if(start.isEmpty() && end.isEmpty()){
+                    return "redirect:/admin/thong-ke/nhap-kho";
+                }
                 if (LocalDate.parse(nk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(nk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))) {
                     daySpentsNhap.put(nk.getNgayNhap(), daySpentsNhap.getOrDefault(nk.getNgayNhap(), 0L) + nk.getTongSoTien());
                     mapNcc.put(nk.getMaNhaCungCap(), mapNcc.getOrDefault(nk.getMaNhaCungCap(), 0) + 1);
@@ -1830,7 +1836,8 @@ public class AppController {
     @GetMapping("/ke-toan/dat-hang")
     public String showDanhSachDatHangKT(Model model) {
         model.addAttribute("listDatHang", datHangService.getAllDatHang());
-
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
 
         return "kt_danh_sach_dat_hang";
     }
@@ -1862,6 +1869,9 @@ public class AppController {
         chiTietXuatKho.setMaXuatKho(xuatKho.getMaXuatKho());
         chiTietXuatKho.setMaSanPham(datHang.getMaSanPham());
         chiTietXuatKhoService.saveChiTietXuatKho(chiTietXuatKho);
+        TaiKhoan tkAdmin = taiKhoanService.getTaiKhoan(1L);
+        tkAdmin.setTienNhap(tkAdmin.getTienNhap() + datHang.getTongTien());
+        taiKhoanService.saveTaiKhoan(tkAdmin);
 
         datHangService.deleteDatHang(maDatHang);
 
