@@ -43,7 +43,7 @@ public class RoleSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests().requestMatchers("/", "/index.html", "/login", "/register", "/css/**", "/image/**", "/public/**").permitAll();
+        http.authorizeRequests().requestMatchers("/", "/index.html", "/login", "/lop", "/dau", "/ac-quy", "/phu-tung", "/register", "/css/**", "/image/**", "/public/**").permitAll();
         http.authorizeRequests()
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
             .requestMatchers("/ke-toan/**").hasAuthority("KETOAN")

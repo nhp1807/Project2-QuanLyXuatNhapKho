@@ -109,52 +109,80 @@ public class AppController {
     }
 
     @GetMapping("/")
-    public String index(Model model, @Param("keyword") String keyword) {
-        List<SanPham> listLop = new ArrayList<>();
-        List<SanPham> listDau = new ArrayList<>();
-        List<SanPham> listAcQuy = new ArrayList<>();
-        List<SanPham> listPhuTung = new ArrayList<>();
+    public String index(Model model) {
+        return "index";
+    }
 
-        if (keyword != null) {
-            for (SanPham sanPham : sanPhamRepository.findByTenSanPhamContaining(keyword)) {
-                if (sanPham.getLoaiSanPham().equals("Lốp")) {
-                    listLop.add(sanPham);
-                } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
-                    listDau.add(sanPham);
-                } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
-                    listAcQuy.add(sanPham);
-                } else {
-                    listPhuTung.add(sanPham);
-                }
+    @GetMapping("/lop")
+    public String showTrangLop(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/lop";
             }
-
-            model.addAttribute("listLop", listLop);
-            model.addAttribute("listLop", listLop);
-            model.addAttribute("listDau", listDau);
-            model.addAttribute("listAcQuy", listAcQuy);
-            model.addAttribute("listPhuTung", listPhuTung);
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listLop", listSanPham);
         } else {
-            for (SanPham sanPham : sanPhamService.getAllSanPham()) {
-                if (sanPham.getLoaiSanPham().equals("Lốp")) {
-                    listLop.add(sanPham);
-                } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
-                    listDau.add(sanPham);
-                } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
-                    listAcQuy.add(sanPham);
-                } else {
-                    listPhuTung.add(sanPham);
-                }
-            }
-
-            model.addAttribute("listLop", listLop);
-            model.addAttribute("listLop", listLop);
-            model.addAttribute("listDau", listDau);
-            model.addAttribute("listAcQuy", listAcQuy);
-            model.addAttribute("listPhuTung", listPhuTung);
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Lốp");
+            model.addAttribute("listLop", listSanPham);
         }
 
+        return "trang_lop";
+    }
 
-        return "index";
+    @GetMapping("/dau")
+    public String showTrangDau(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/dau";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listDau", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Dầu");
+            model.addAttribute("listDau", listSanPham);
+        }
+
+        return "trang_dau";
+    }
+
+    @GetMapping("/ac-quy")
+    public String showTrangAcQuy(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/ac-quy";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listAcquy", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Ắc quy");
+            model.addAttribute("listAcquy", listSanPham);
+        }
+
+        return "trang_acquy";
+    }
+
+    @GetMapping("/phu-tung")
+    public String showTrangPhuTung(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/phu-tung";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listPhutung", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Phụ tùng");
+            model.addAttribute("listPhutung", listSanPham);
+        }
+
+        return "trang_phutung";
     }
 
     // ----------------------------------Admin----------------------------------------
@@ -1213,32 +1241,90 @@ public class AppController {
 
     @GetMapping("/khach-hang/danh-sach-san-pham")
     public String showDanhSachSanPhamKH(Model model) {
-        List<SanPham> listLop = new ArrayList<>();
-        List<SanPham> listDau = new ArrayList<>();
-        List<SanPham> listAcQuy = new ArrayList<>();
-        List<SanPham> listPhuTung = new ArrayList<>();
-
-        for (SanPham sanPham : sanPhamService.getAllSanPham()) {
-            if (sanPham.getLoaiSanPham().equals("Lốp")) {
-                listLop.add(sanPham);
-            } else if (sanPham.getLoaiSanPham().equals("Dầu")) {
-                listDau.add(sanPham);
-            } else if (sanPham.getLoaiSanPham().equals("Ắc quy")) {
-                listAcQuy.add(sanPham);
-            } else {
-                listPhuTung.add(sanPham);
-            }
-        }
-
-        model.addAttribute("listLop", listLop);
-        model.addAttribute("listLop", listLop);
-        model.addAttribute("listDau", listDau);
-        model.addAttribute("listAcQuy", listAcQuy);
-        model.addAttribute("listPhuTung", listPhuTung);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
 
         return "kh_danh_sach_sp";
+    }
+
+    @GetMapping("/khach-hang/danh-sach-san-pham/lop")
+    public String showDanhSachLopKH(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/khach-hang/danh-sach-san-pham/lop";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listLop", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Lốp");
+            model.addAttribute("listLop", listSanPham);
+        }
+
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_danh_sach_lop";
+    }
+
+    @GetMapping("/khach-hang/danh-sach-san-pham/dau")
+    public String showDanhSachDauKH(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/khach-hang/danh-sach-san-pham/dau";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listDau", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Dầu");
+            model.addAttribute("listDau", listSanPham);
+        }
+
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_danh_sach_dau";
+    }
+
+    @GetMapping("/khach-hang/danh-sach-san-pham/ac-quy")
+    public String showDanhSachAcQuyKH(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/khach-hang/danh-sach-san-pham/ac-quy";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listAcquy", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Ắc quy");
+            model.addAttribute("listAcquy", listSanPham);
+        }
+
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_danh_sach_acquy";
+    }
+
+    @GetMapping("/khach-hang/danh-sach-san-pham/phu-tung")
+    public String showDanhSachPhuTungKH(Model model, @Param("ten") String ten, @Param("hang") String hang){
+        List<SanPham> listSanPham = new ArrayList<>();
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/khach-hang/danh-sach-san-pham/phu-tung";
+            }
+            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+            model.addAttribute("listPhutung", listSanPham);
+        } else {
+            listSanPham = sanPhamRepository.findByLoaiSanPham("Phụ tùng");
+            model.addAttribute("listPhutung", listSanPham);
+        }
+
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
+        return "kh_danh_sach_phutung";
     }
 
     @GetMapping("/khach-hang/lich-su")
