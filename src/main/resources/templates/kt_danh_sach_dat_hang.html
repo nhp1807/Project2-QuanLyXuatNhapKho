@@ -48,8 +48,8 @@
 
 <div class="content">
   <div style="display: flex; justify-content: end">
-    <form th:action="@{/ke-toan/danh-sach-nhap-kho}">
-      <input type="text" name="keyword" placeholder="Nhập thông tin">
+    <form th:action="@{/ke-toan/dat-hang}">
+      <input type="text" name="sdt" placeholder="Nhập thông tin">
       <input type="submit" value="Tìm kiếm">
     </form>
   </div>
@@ -60,7 +60,7 @@
     <thead>
     <tr>
       <th class="text-center align-middle col-1">ID</th>
-      <th class="text-center align-middle col-1">Mã khách hàng</th>
+      <th class="text-center align-middle col-1">Số điện thoại</th>
       <th class="text-center align-middle col-1">Mã sản phẩm</th>
       <th class="text-center align-middle col-3">Ngày đặt</th>
       <th class="text-center align-middle col-2">Thành tiền</th>
@@ -70,10 +70,10 @@
     <tbody>
     <tr th:each="dathang: ${listDatHang}">
       <th class="align-middle col-1 text-center" th:text="${dathang.maDatHang}"></th>
-      <th class="align-middle col-1 text-center" th:text="${dathang.maKhachHang}"></th>
+      <th class="align-middle col-1 text-center" th:text="${taiKhoanService.getTaiKhoan(dathang.maKhachHang).getSoDienThoai()}"></th>
       <th class="align-middle col-1 text-center" th:text="${dathang.maSanPham}"></th>
       <th class="align-middle col-3 text-center" th:text="${dathang.ngayDat}"></th>
-      <th class="align-middle col-2 text-center" th:text="${dathang.tongTien}"></th>
+      <th class="align-middle col-2 text-right" th:text="${dathang.tongTien}"></th>
       <th class="text-center col-4">
         <a th:href="@{/ke-toan/dat-hang/thanh-toan/{maDatHang}(maDatHang=${dathang.maDatHang})}"
            class="btn btn-primary">Thanh toán</a>

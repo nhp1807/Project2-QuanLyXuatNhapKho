@@ -538,6 +538,7 @@ public class AppController {
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
         Collections.sort(listNhapKho, Comparator.comparing(NhapKho::getNgayNhap).reversed());
         model.addAttribute("listNhapKho", listNhapKho);
+        model.addAttribute("nhaCungCapService", nhaCungCapService);
 //        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -906,7 +907,7 @@ public class AppController {
             Map<String, Long> daySpentsXuat = new HashMap<>();
             for (XuatKho xk : listXuatKho) {
                 if (LocalDate.parse(xk.getNgayNhap(), dtf).isAfter(LocalDate.parse(start, dtf)) && LocalDate.parse(xk.getNgayNhap(), dtf).isBefore(LocalDate.parse(end, dtf))) {
-                    daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
+                    daySpentsXuat.put(xk.getNgayNhap(), daySpentsXuat.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
                 }
             }
 
@@ -942,7 +943,7 @@ public class AppController {
             // Liệt kê hằng ngày bán được bao nhiêu tiền
             Map<String, Long> daySpentsXuat = new HashMap<>();
             for (XuatKho xk : listXuatKho) {
-                daySpentsXuat.put(xk.getNgayNhap(), customerSpent.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
+                daySpentsXuat.put(xk.getNgayNhap(), daySpentsXuat.getOrDefault(xk.getNgayNhap(), 0L) + xk.getTongSoTien());
             }
 
             model.addAttribute("maxSpent", maxSpent);
@@ -1116,10 +1117,20 @@ public class AppController {
     }
 
     @GetMapping("/admin/dat-hang")
-    public String showDanhSachDatHangAdmin(Model model) {
-        model.addAttribute("listDatHang", datHangService.getAllDatHang());
-        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-        model.addAttribute("currentAccount", getLastName(currentName));
+    public String showDanhSachDatHangAdmin(Model model, @Param("sdt") String sdt) {
+        if(sdt != null){
+            model.addAttribute("taiKhoanService", taiKhoanService);
+            List<DatHang> list = datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
+            System.out.println(list);
+            model.addAttribute("listDatHang", datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan()));
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+        }else{
+            model.addAttribute("taiKhoanService", taiKhoanService);
+            model.addAttribute("listDatHang", datHangService.getAllDatHang());
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+        }
 
         return "ad_danh_sach_dat_hang";
     }
@@ -1381,6 +1392,8 @@ public class AppController {
         }
 
         model.addAttribute("listDatHang", listDathangKH);
+        model.addAttribute("sanPhamService", sanPhamService);
+
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
         return "kh_danh_sach_dat_hang";
@@ -1602,6 +1615,7 @@ public class AppController {
     public String showDanhSachNhapKhoKT(Model model) {
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
         model.addAttribute("listNhapKho", listNhapKho);
+        model.addAttribute("nhaCungCapService", nhaCungCapService);
 //        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -1934,10 +1948,20 @@ public class AppController {
     }
 
     @GetMapping("/ke-toan/dat-hang")
-    public String showDanhSachDatHangKT(Model model) {
-        model.addAttribute("listDatHang", datHangService.getAllDatHang());
-        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-        model.addAttribute("currentAccount", getLastName(currentName));
+    public String showDanhSachDatHangKT(Model model, @Param("sdt") String sdt) {
+        if(sdt != null){
+            model.addAttribute("taiKhoanService", taiKhoanService);
+            List<DatHang> list = datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
+            System.out.println(list);
+            model.addAttribute("listDatHang", datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan()));
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+        }else{
+            model.addAttribute("taiKhoanService", taiKhoanService);
+            model.addAttribute("listDatHang", datHangService.getAllDatHang());
+            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+            model.addAttribute("currentAccount", getLastName(currentName));
+        }
 
         return "kt_danh_sach_dat_hang";
     }

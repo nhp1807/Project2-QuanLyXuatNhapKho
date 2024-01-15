@@ -64,8 +64,8 @@
         <tr>
             <th class="text-center align-middle col-1">ID</th>
             <th class="text-center align-middle col-1">Mã nhân viên</th>
-            <th class="text-center align-middle col-1">Mã nhà cung cấp</th>
-            <th class="text-center align-middle col-3">Ngày nhập</th>
+            <th class="text-center align-middle col-2">Tên nhà cung cấp</th>
+            <th class="text-center align-middle col-2">Ngày nhập</th>
             <th class="text-center align-middle col-2">Tổng số tiền</th>
             <th class="text-center align-middle col-4">Chức năng</th>
         </tr>
@@ -74,8 +74,8 @@
         <tr th:each="nhapkho: ${listNhapKho}">
             <th class="align-middle col-1 text-center" th:text="${nhapkho.maNhapKho}"></th>
             <th class="align-middle col-1 text-center" th:text="${nhapkho.maNhanVien}"></th>
-            <th class="align-middle col-1 text-center" th:text="${nhapkho.maNhaCungCap}"></th>
-            <th class="align-middle col-3 text-center" th:text="${nhapkho.ngayNhap}"></th>
+            <th class="align-middle col-2 text-center" th:text="${nhaCungCapService.getNhaCungCap(nhapkho.maNhaCungCap).getTenNhaCungCap()}"></th>
+            <th class="align-middle col-2 text-center" th:text="${nhapkho.ngayNhap}"></th>
             <th class="align-middle col-2 text-center" th:text="${nhapkho.tongSoTien}"></th>
             <th class="text-center col-4">
                 <a th:href="@{/ke-toan/danh-sach-nhap-kho/chi-tiet/{maNhapKho}(maNhapKho=${nhapkho.maNhapKho})}"

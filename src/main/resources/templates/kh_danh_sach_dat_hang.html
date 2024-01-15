@@ -51,8 +51,10 @@
         <thead>
         <tr>
             <th class="align-middle text-center col-1">ID</th>
-            <th class="align-middle text-center col-4">Mã sản phẩm</th>
-            <th class="align-middle text-center col-4">Số lượng</th>
+            <th class="align-middle text-center col-3">Tên sản phẩm</th>
+            <th class="align-middle text-center col-3">Hãng sản phẩm</th>
+            <th class="align-middle text-center col-1">Số lượng</th>
+            <th class="align-middle text-center col-2">Ngày đặt</th>
             <th class="align-middle text-center col-2">Tổng tiền (VNĐ)</th>
             <th class="align-middle text-center col-1">Chức năng</th>
         </tr>
@@ -60,9 +62,11 @@
         <tbody>
         <tr th:each="dathang: ${listDatHang}">
             <th class="align-middle col-1 text-center" th:text="${dathang.maDatHang}"></th>
-            <th class="align-middle col-4" th:text="${dathang.maSanPham}"></th>
-            <th class="align-middle col-4" th:text="${dathang.soLuong}"></th>
-            <th class="align-middle col-2 text-center" th:text="${dathang.tongTien}"></th>
+            <th class="align-middle col-3 text-center" th:text="${sanPhamService.getSanPham(dathang.maSanPham).getTenSanPham()}"></th>
+            <th class="align-middle col-3 text-center" th:text="${sanPhamService.getSanPham(dathang.maSanPham).getHangSanPham()}"></th>
+            <th class="align-middle col-1 text-center" th:text="${dathang.soLuong}"></th>
+            <th class="align-middle col-2 text-center" th:text="${dathang.ngayDat}"></th>
+            <th class="align-middle col-2 text-right" th:text="${dathang.tongTien}"></th>
             <th class="text-center col-1">
                 <a th:href="@{/khach-hang/danh-sach-dat-hang/xoa/{maDatHang}(maDatHang=${dathang.maDatHang})}"
                    class="btn btn-danger">Xóa</a>
