@@ -56,7 +56,7 @@ CREATE TABLE `chitietxuatkhos` (
   `ma_xuat_kho` bigint DEFAULT NULL,
   `so_luong` int DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -65,7 +65,7 @@ CREATE TABLE `chitietxuatkhos` (
 
 LOCK TABLES `chitietxuatkhos` WRITE;
 /*!40000 ALTER TABLE `chitietxuatkhos` DISABLE KEYS */;
-INSERT INTO `chitietxuatkhos` VALUES (1,140000,3,1,4),(2,2000000,1,2,1),(3,2000000,1,3,1),(4,500000,7,4,10),(5,500000,7,5,10),(6,500000,7,6,10),(7,1400000,8,7,2),(8,1400000,8,8,3);
+INSERT INTO `chitietxuatkhos` VALUES (1,140000,3,1,4),(2,2000000,1,2,1),(3,2000000,1,3,1),(4,500000,7,4,10),(5,500000,7,5,10),(6,500000,7,6,10),(7,1400000,8,7,2),(8,1400000,8,8,3),(9,140000,3,9,3),(10,1720000,10,10,1);
 /*!40000 ALTER TABLE `chitietxuatkhos` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,7 +84,7 @@ CREATE TABLE `dathangs` (
   `so_luong` int DEFAULT NULL,
   `tong_tien` bigint DEFAULT NULL,
   PRIMARY KEY (`ma_dat_hang`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -93,7 +93,7 @@ CREATE TABLE `dathangs` (
 
 LOCK TABLES `dathangs` WRITE;
 /*!40000 ALTER TABLE `dathangs` DISABLE KEYS */;
-INSERT INTO `dathangs` VALUES (6,3,3,'2024-01-11',3,420000),(7,4,2,'2024-01-15',4,12000000);
+INSERT INTO `dathangs` VALUES (7,4,2,'2024-01-15',4,12000000),(9,4,1,'2024-01-17',1,2000000);
 /*!40000 ALTER TABLE `dathangs` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -169,7 +169,7 @@ CREATE TABLE `sanphams` (
   `ten_san_pham` varchar(255) DEFAULT NULL,
   `thong_tin_san_pham` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`ma_san_pham`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -178,7 +178,7 @@ CREATE TABLE `sanphams` (
 
 LOCK TABLES `sanphams` WRITE;
 /*!40000 ALTER TABLE `sanphams` DISABLE KEYS */;
-INSERT INTO `sanphams` VALUES (1,1500000,2000000,'Michelin','Lốp',0,3,'185/60R15','Thông số: 185/60R15. Sử dụng cho xe Honda, Mazda'),(2,2400000,3000000,'Bridgestone','Lốp',0,16,'185/65R16','Thông số: 185/60R15. Sử dụng cho xe Toyota, Mazda'),(3,100000,140000,'Castrol','Dầu',0,13,'10W40','Thông số: 10W40. Sử dụng cho xe Honda, Mazda'),(4,100000,200000,'Total','Dầu',0,20,'15W40','Thông số: 15W40. Sử dụng cho xe Porsche, Mazda'),(5,3400000,3700000,'Varta','Ắc quy',0,5,'12V - 100AH','Thông số: 12V - 100AH. Sử dụng cho xe Huyndai, Mazda'),(6,3000000,3500000,'Platinum','Ắc quy',0,7,'12V - 150AH','Thông số: 12V - 150AH. Sử dụng cho xe Huyndai, Mercedes'),(7,200000,500000,'Bosch','Phụ tùng',0,10,'Gạt mưa','Sử dụng cho mọi loại xe'),(8,900000,2000000,'TPMS Yoelbaer','Phụ tùng',0,13,'Cảm biến áp suất lốp ','Sử dụng cho những xe hỗ trợ cảm biến');
+INSERT INTO `sanphams` VALUES (1,1500000,2000000,'Michelin','Lốp',0,2,'185/60R15','Thông số: 185/60R15. Sử dụng cho xe Honda, Mazda'),(2,2400000,3000000,'Bridgestone','Lốp',0,16,'185/65R16','Thông số: 185/60R15. Sử dụng cho xe Toyota, Mazda'),(3,100000,140000,'Castrol','Dầu',0,13,'10W40','Thông số: 10W40. Sử dụng cho xe Honda, Mazda'),(4,100000,200000,'Total','Dầu',0,20,'15W40','Thông số: 15W40. Sử dụng cho xe Porsche, Mazda'),(5,3400000,3700000,'Varta','Ắc quy',0,5,'12V - 100AH','Thông số: 12V - 100AH. Sử dụng cho xe Huyndai, Mazda'),(6,3000000,3500000,'Platinum','Ắc quy',0,7,'12V - 150AH','Thông số: 12V - 150AH. Sử dụng cho xe Huyndai, Mercedes'),(7,200000,500000,'Bosch','Phụ tùng',0,10,'Gạt mưa','Sử dụng cho mọi loại xe'),(8,900000,2000000,'TPMS Yoelbaer','Phụ tùng',0,13,'Cảm biến áp suất lốp ','Sử dụng cho những xe hỗ trợ cảm biến'),(9,1300000,1700000,'Michelin','Lốp',0,16,'185/65R16','Thông số: 185/60R15. Sử dụng cho xe Toyota, Mazda'),(10,1430000,1720000,'Bridgestone','Lốp',0,1,'185/60R15','Thông số: 185/60R15. Sử dụng cho xe Honda, Mazda'),(11,90000,130000,'Total','Dầu',0,7,'10W40','Thông số: 10W40. Sử dụng cho xe Honda, Mazda'),(12,110000,170000,'Castrol','Dầu',0,4,'15W40','Thông số: 15W40. Sử dụng cho xe Porsche, Mazda'),(13,2500000,3000000,'Platinum','Ắc quy',0,5,'12V - 100AH','Thông số: 12V - 100AH. Sử dụng cho xe Huyndai, Mazda'),(14,1950000,2550000,'Varta','Ắc quy',0,6,'12V - 150AH','Thông số: 12V - 150AH. Sử dụng cho xe Huyndai, Mercedes');
 /*!40000 ALTER TABLE `sanphams` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -216,7 +216,7 @@ CREATE TABLE `taikhoans` (
 
 LOCK TABLES `taikhoans` WRITE;
 /*!40000 ALTER TABLE `taikhoans` DISABLE KEYS */;
-INSERT INTO `taikhoans` VALUES (1,'001202007035','Admin',0,'Nguyễn Hải Phong',0,'$2a$10$eg/ivjs3IvdCeNpbWxrVbuKAZQcG2cPlF0oUUcLtJIF3foYqKbvQe','2002-07-18',NULL,'Hà Nội','$2a$10$eg/ivjs3IvdCeNpbWxrVbuKAZQcG2cPlF0oUUcLtJIF3foYqKbvQe',0,'0982944425','admin',26560000,120400000),(2,'','Kế toán',0,'Đỗ Trung Hiếu',NULL,'$2a$10$VuHo03AYJEUudXE/gObZ4e8WOI7aZ3qGKL9HTuqk7vANXBJhE40vi','2001-06-11',NULL,'','$2a$10$VuHo03AYJEUudXE/gObZ4e8WOI7aZ3qGKL9HTuqk7vANXBJhE40vi',2,'0988436048','hieudt',NULL,NULL),(3,NULL,'Khách hàng',0,'Nguyễn Khoa Đoàn',NULL,'$2a$10$DYAjQU2DICpixqLBbu2pY.faii564bFn9pF9bXSLHjnpQIQOn5nJC',NULL,NULL,NULL,NULL,1,'0965672833','doannk',NULL,NULL),(4,NULL,'Khách hàng',0,'Phạm Ngọc Hải ',NULL,'$2a$10$BJPZshs.4qJHAvsVAob/pu3fqTq2koyi9cRVDdiIEXsrItzIuvxee',NULL,NULL,NULL,NULL,1,'0776463573','haipn',NULL,NULL),(5,NULL,'Khách hàng',0,'Cao Bích Ngọc',NULL,'$2a$10$SMe.YIvdyAZGMRgD.r0wSeJ7nTMrNCH/d6c2SX02loNMZkQENTlvC',NULL,NULL,NULL,'$2a$10$SMe.YIvdyAZGMRgD.r0wSeJ7nTMrNCH/d6c2SX02loNMZkQENTlvC',1,'0934535937','ngoccb',NULL,NULL);
+INSERT INTO `taikhoans` VALUES (1,'001202007035','Admin',0,'Nguyễn Hải Phong',0,'$2a$10$eg/ivjs3IvdCeNpbWxrVbuKAZQcG2cPlF0oUUcLtJIF3foYqKbvQe','2002-07-18',NULL,'Hà Nội','$2a$10$eg/ivjs3IvdCeNpbWxrVbuKAZQcG2cPlF0oUUcLtJIF3foYqKbvQe',0,'0982944425','admin',28700000,120400000),(2,'','Kế toán',0,'Đỗ Trung Hiếu',NULL,'$2a$10$VuHo03AYJEUudXE/gObZ4e8WOI7aZ3qGKL9HTuqk7vANXBJhE40vi','2001-06-11',NULL,'','$2a$10$VuHo03AYJEUudXE/gObZ4e8WOI7aZ3qGKL9HTuqk7vANXBJhE40vi',2,'0988436048','hieudt',NULL,NULL),(3,NULL,'Khách hàng',0,'Nguyễn Khoa Đoàn',NULL,'$2a$10$DYAjQU2DICpixqLBbu2pY.faii564bFn9pF9bXSLHjnpQIQOn5nJC',NULL,NULL,NULL,NULL,1,'0965672833','doannk',NULL,NULL),(4,NULL,'Khách hàng',0,'Phạm Ngọc Hải ',NULL,'$2a$10$BJPZshs.4qJHAvsVAob/pu3fqTq2koyi9cRVDdiIEXsrItzIuvxee',NULL,NULL,NULL,NULL,1,'0776463573','haipn',NULL,NULL),(5,NULL,'Khách hàng',0,'Cao Bích Ngọc',NULL,'$2a$10$SMe.YIvdyAZGMRgD.r0wSeJ7nTMrNCH/d6c2SX02loNMZkQENTlvC',NULL,NULL,NULL,'$2a$10$SMe.YIvdyAZGMRgD.r0wSeJ7nTMrNCH/d6c2SX02loNMZkQENTlvC',1,'0934535937','ngoccb',NULL,NULL);
 /*!40000 ALTER TABLE `taikhoans` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -234,7 +234,7 @@ CREATE TABLE `xuatkhos` (
   `ngay_nhap` varchar(255) DEFAULT NULL,
   `tong_so_tien` bigint DEFAULT NULL,
   PRIMARY KEY (`ma_xuat_kho`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -243,7 +243,7 @@ CREATE TABLE `xuatkhos` (
 
 LOCK TABLES `xuatkhos` WRITE;
 /*!40000 ALTER TABLE `xuatkhos` DISABLE KEYS */;
-INSERT INTO `xuatkhos` VALUES (1,3,1,'2024-01-01',560000),(2,4,1,'2024-01-02',2000000),(3,3,2,'2024-01-02',2000000),(4,4,1,'2024-01-02',5000000),(5,4,1,'2024-01-02',5000000),(6,4,1,'2024-01-02',5000000),(7,3,1,'2024-01-02',2800000),(8,3,1,'2024-01-02',4200000);
+INSERT INTO `xuatkhos` VALUES (1,3,1,'2024-01-01',560000),(2,4,1,'2024-01-02',2000000),(3,3,2,'2024-01-02',2000000),(4,4,1,'2024-01-02',5000000),(5,4,1,'2024-01-02',5000000),(6,4,1,'2024-01-02',5000000),(7,3,1,'2024-01-02',2800000),(8,3,1,'2024-01-02',4200000),(9,3,1,'2024-01-11',420000),(10,3,1,'2024-01-17',1720000);
 /*!40000 ALTER TABLE `xuatkhos` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -256,4 +256,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-01-15 21:02:37
+-- Dump completed on 2024-01-17 19:52:16
