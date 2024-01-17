@@ -53,10 +53,12 @@ public class AppController {
     @Autowired
     private DatHangService datHangService;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     public Long idDangNhap, idSanPhamSelect;
     public boolean errPassword = false;
     public boolean errThemXuatKho = false;
     public boolean errRegister = false;
+    public boolean errTenTaiKhoan = false;
     public Long idNhapKho, idXuatKho;
 
     // ---------Đăng nhập và đăng ký-----------------
@@ -479,12 +481,30 @@ public class AppController {
      * Hiển thị danh sách sản phẩm cho admin
      */
     @GetMapping("/admin/danh-sach-san-pham")
-    public String showDanhSachSanPhamAdmin(Model model, @Param("keyword") String keyword) {
+    public String showDanhSachSanPhamAdmin(Model model, @Param("ten") String ten, @Param("hang") String hang) {
         List<SanPham> listSanPham;
-        if (keyword != null) {
-            listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
+//        if (keyword != null) {
+//            listSanPham = sanPhamRepository.findByTenSanPhamContaining(keyword);
+//        } else {
+//            listSanPham = sanPhamService.getAllSanPham();
+//        }
+
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/admin/danh-sach-san-pham";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listSanPham", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listSanPham", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listSanPham", listSanPham);
+            }
         } else {
             listSanPham = sanPhamService.getAllSanPham();
+            model.addAttribute("listSanPham", listSanPham);
         }
 
         listSanPham.sort(Comparator.comparing(SanPham::getLoaiSanPham));
@@ -564,7 +584,7 @@ public class AppController {
     @GetMapping("/admin/danh-sach-nhap-kho")
     public String showDanhSachNhapKhoAdmin(Model model) {
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
-        Collections.sort(listNhapKho, Comparator.comparing(NhapKho::getNgayNhap).reversed());
+        listNhapKho.sort(Comparator.comparing(NhapKho::getNgayNhap).reversed());
         model.addAttribute("listNhapKho", listNhapKho);
         model.addAttribute("nhaCungCapService", nhaCungCapService);
 //        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
@@ -615,6 +635,7 @@ public class AppController {
     @GetMapping("/admin/danh-sach-nhap-kho/chi-tiet/{maNhapKho}")
     public String showDetailNhapKhoAdmin(@PathVariable Long maNhapKho, Model model) {
         List<ChiTietNhapKho> listChiTiet = chiTietNhapKhoRepository.findByMaNhapKho(maNhapKho);
+        model.addAttribute("sanPhamService", sanPhamService);
         model.addAttribute("listChiTiet", listChiTiet);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -741,10 +762,29 @@ public class AppController {
     }
 
     @PostMapping("/admin/them-xuat-kho")
-    public String addXuatKhoAdmin(@ModelAttribute("nhapkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
+    public String addXuatKhoAdmin(@ModelAttribute("xuatkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
         if(!taiKhoanRepository.existsBySoDienThoai(sdt)){
-            errThemXuatKho = true;
-            return "redirect:/admin/them-xuat-kho";
+//            errThemXuatKho = true;
+//            return "redirect:/admin/them-xuat-kho";
+            TaiKhoan taiKhoan = new TaiKhoan();
+            taiKhoan.setTenTaiKhoan(sdt);
+            taiKhoan.setSoDienThoai(sdt);
+            taiKhoan.setHoTen("Khách hàng");
+            taiKhoan.setMatKhau(encoder.encode("admin"));
+            taiKhoan.setReMatKhau(taiKhoan.getMatKhau());
+            taiKhoan.setRole(Role.KHACHHANG);
+            taiKhoan.setChucVu("Khách hàng");
+            taiKhoanService.saveTaiKhoan(taiKhoan);
+            System.out.println("Tai khoan " + taiKhoan.toString());
+
+            xuatKho.setMaNhanVien(idDangNhap);
+            System.out.println(taiKhoanRepository.findBySoDienThoai(sdt).getSoDienThoai());
+            xuatKho.setMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
+            xuatKho.setNgayNhap(xuatKho.getNgayNhap());
+            xuatKho.setTongSoTien(0L);
+
+            xuatKhoService.saveXuatKho(xuatKho);
+            return "redirect:/admin/danh-sach-xuat-kho";
         }
 
         xuatKho.setMaNhanVien(idDangNhap);
@@ -779,6 +819,7 @@ public class AppController {
         model.addAttribute("listChiTiet", listChiTiet);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
+        model.addAttribute("sanPhamService", sanPhamService);
 
         return "ad_chi_tiet_xuat_kho";
     }
@@ -1257,6 +1298,9 @@ public class AppController {
 
     @GetMapping("/khach-hang/chinh-sua-thong-tin")
     public String showUpdateTaiKhoanKH(Model model) {
+//        if(errTenTaiKhoan == true){
+//            model.addAttribute("errTenTaiKhoan", "Tên tài khoản đã tồn tại");
+//        }
         model.addAttribute("taikhoan", taiKhoanService.getTaiKhoan(idDangNhap));
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -1268,6 +1312,11 @@ public class AppController {
     public String updateTaiKhoanKH(@PathVariable Long maTaiKhoan, @ModelAttribute("taikhoan") TaiKhoan taiKhoan,
                                    Model model) {
         TaiKhoan existingTaiKhoan = taiKhoanService.getTaiKhoan(maTaiKhoan);
+
+//        if(taiKhoanRepository.existsByTenTaiKhoan(taiKhoan.getTenTaiKhoan())){
+//            errTenTaiKhoan = true;
+//            return "redirect:/khach-hang/chinh-sua-thong-tin";
+//        }
 
         existingTaiKhoan.setMaTaiKhoan(taiKhoan.getMaTaiKhoan());
         existingTaiKhoan.setTenTaiKhoan(taiKhoan.getTenTaiKhoan());
@@ -1598,9 +1647,32 @@ public class AppController {
      * Hiển thị danh sách sản phẩm cho admin
      */
     @GetMapping("/ke-toan/danh-sach-san-pham")
-    public String showDanhSachSanPhamKT(Model model) {
-        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
-        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+    public String showDanhSachSanPhamKT(Model model, @Param("ten") String ten, @Param("hang") String hang) {
+//        List<SanPham> listSanPham = sanPhamService.getAllSanPham();
+//        Collections.sort(listSanPham, Comparator.comparing(SanPham::getTenSanPham));
+//        model.addAttribute("listSanPham", listSanPham);
+//        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+//        model.addAttribute("currentAccount", getLastName(currentName));
+        List<SanPham> listSanPham = new ArrayList<>();
+        if(ten != null && hang != null){
+            if(ten.isEmpty() && hang.isEmpty()){
+                return "redirect:/ke-toan/danh-sach-san-pham";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listSanPham", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listSanPham", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listSanPham", listSanPham);
+            }
+        } else {
+            listSanPham = sanPhamService.getAllSanPham();
+            model.addAttribute("listSanPham", listSanPham);
+        }
+
+        listSanPham.sort(Comparator.comparing(SanPham::getLoaiSanPham));
         model.addAttribute("listSanPham", listSanPham);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -1730,6 +1802,7 @@ public class AppController {
         model.addAttribute("listChiTiet", listChiTiet);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
+        model.addAttribute("sanPhamService", sanPhamService);
 
         return "kt_chi_tiet_nhap_kho";
     }
@@ -1855,8 +1928,27 @@ public class AppController {
     @PostMapping("/ke-toan/them-xuat-kho")
     public String addXuatKhoKT(@ModelAttribute("nhapkho") XuatKho xuatKho, @RequestParam("sdt") String sdt) {
         if(!taiKhoanRepository.existsBySoDienThoai(sdt)){
-            errThemXuatKho = true;
-            return "redirect:/admin/them-xuat-kho";
+//            errThemXuatKho = true;
+//            return "redirect:/ke-toan/them-xuat-kho";
+            TaiKhoan taiKhoan = new TaiKhoan();
+            taiKhoan.setTenTaiKhoan(sdt);
+            taiKhoan.setSoDienThoai(sdt);
+            taiKhoan.setHoTen("Khách hàng");
+            taiKhoan.setMatKhau(encoder.encode("admin"));
+            taiKhoan.setReMatKhau(taiKhoan.getMatKhau());
+            taiKhoan.setRole(Role.KHACHHANG);
+            taiKhoan.setChucVu("Khách hàng");
+            taiKhoanService.saveTaiKhoan(taiKhoan);
+            System.out.println("Tai khoan " + taiKhoan.toString());
+
+            xuatKho.setMaNhanVien(idDangNhap);
+            System.out.println(taiKhoanRepository.findBySoDienThoai(sdt).getSoDienThoai());
+            xuatKho.setMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
+            xuatKho.setNgayNhap(xuatKho.getNgayNhap());
+            xuatKho.setTongSoTien(0L);
+
+            xuatKhoService.saveXuatKho(xuatKho);
+            return "redirect:/ke-toan/danh-sach-xuat-kho";
         }
 
         xuatKho.setMaNhanVien(idDangNhap);
@@ -1891,6 +1983,7 @@ public class AppController {
         model.addAttribute("listChiTiet", listChiTiet);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
+        model.addAttribute("sanPhamService", sanPhamService);
 
         return "kt_chi_tiet_xuat_kho";
     }
@@ -2012,19 +2105,18 @@ public class AppController {
 
     @GetMapping("/ke-toan/dat-hang")
     public String showDanhSachDatHangKT(Model model, @Param("sdt") String sdt) {
+        List<DatHang> list = new ArrayList<>();
+        model.addAttribute("taiKhoanService", taiKhoanService);
         if(sdt != null){
-            model.addAttribute("taiKhoanService", taiKhoanService);
-            List<DatHang> list = datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
-            System.out.println(list);
-            model.addAttribute("listDatHang", datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan()));
-            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-            model.addAttribute("currentAccount", getLastName(currentName));
+            list = datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
         }else{
-            model.addAttribute("taiKhoanService", taiKhoanService);
-            model.addAttribute("listDatHang", datHangService.getAllDatHang());
-            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-            model.addAttribute("currentAccount", getLastName(currentName));
+            list = datHangService.getAllDatHang();
         }
+        list.sort(Comparator.comparing(DatHang::getNgayDat));
+        Collections.reverse(list);
+        model.addAttribute("listDatHang", list);
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
 
         return "kt_danh_sach_dat_hang";
     }
