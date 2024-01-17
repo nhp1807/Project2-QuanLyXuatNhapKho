@@ -10,9 +10,9 @@
 - Thiết lập các thuộc tính cơ sở dữ liệu trong file application.properties để phù hợp với cài đặt của cá nhân.
 
 ```bash
-spring.datasource.url=jdbc:mysql://localhost:3306/db_quanlyxuatnhapkho
-spring.datasource.username=root
-spring.datasource.password=haiphong1234
+spring.datasource.url=jdbc:mysql://localhost:3306/database_name
+spring.datasource.username=username
+spring.datasource.password=password
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 
 spring.jpa.hibernate.ddl-auto=update
