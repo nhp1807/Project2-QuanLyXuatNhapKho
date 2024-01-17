@@ -120,9 +120,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/lop";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listLop", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listLop", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listLop", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listLop", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Lốp");
             model.addAttribute("listLop", listSanPham);
@@ -138,9 +145,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/dau";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listDau", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listDau", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listDau", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listDau", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Dầu");
             model.addAttribute("listDau", listSanPham);
@@ -156,9 +170,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/ac-quy";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listAcquy", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listAcquy", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listAcquy", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listAcquy", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Ắc quy");
             model.addAttribute("listAcquy", listSanPham);
@@ -174,9 +195,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/phu-tung";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listPhutung", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listPhutung", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listPhutung", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listPhutung", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Phụ tùng");
             model.addAttribute("listPhutung", listSanPham);
@@ -459,7 +487,7 @@ public class AppController {
             listSanPham = sanPhamService.getAllSanPham();
         }
 
-        Collections.sort(listSanPham, Comparator.comparing(SanPham::getLoaiSanPham));
+        listSanPham.sort(Comparator.comparing(SanPham::getLoaiSanPham));
         model.addAttribute("listSanPham", listSanPham);
         String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
         model.addAttribute("currentAccount", getLastName(currentName));
@@ -1118,19 +1146,23 @@ public class AppController {
 
     @GetMapping("/admin/dat-hang")
     public String showDanhSachDatHangAdmin(Model model, @Param("sdt") String sdt) {
+        List<DatHang> list = new ArrayList<>();
         if(sdt != null){
             model.addAttribute("taiKhoanService", taiKhoanService);
-            List<DatHang> list = datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
-            System.out.println(list);
-            model.addAttribute("listDatHang", datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan()));
-            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-            model.addAttribute("currentAccount", getLastName(currentName));
+            list = datHangRepository.findByMaKhachHang(taiKhoanRepository.findBySoDienThoai(sdt).getMaTaiKhoan());
+            list.sort(Comparator.comparing(DatHang::getNgayDat));
+            Collections.reverse(list);
+            model.addAttribute("listDatHang", list);
         }else{
             model.addAttribute("taiKhoanService", taiKhoanService);
-            model.addAttribute("listDatHang", datHangService.getAllDatHang());
-            String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
-            model.addAttribute("currentAccount", getLastName(currentName));
+            list = datHangService.getAllDatHang();
+            list.sort(Comparator.comparing(DatHang::getNgayDat));
+            Collections.reverse(list);
+            model.addAttribute("listDatHang", list);
         }
+
+        String currentName = taiKhoanService.getTaiKhoan(idDangNhap).getHoTen();
+        model.addAttribute("currentAccount", getLastName(currentName));
 
         return "ad_danh_sach_dat_hang";
     }
@@ -1265,9 +1297,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/khach-hang/danh-sach-san-pham/lop";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listLop", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listLop", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listLop", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listLop", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Lốp");
             model.addAttribute("listLop", listSanPham);
@@ -1285,9 +1324,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/khach-hang/danh-sach-san-pham/dau";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listDau", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listDau", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listDau", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listDau", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Dầu");
             model.addAttribute("listDau", listSanPham);
@@ -1305,9 +1351,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/khach-hang/danh-sach-san-pham/ac-quy";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listAcquy", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listAcquy", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listAcquy", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listAcquy", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Ắc quy");
             model.addAttribute("listAcquy", listSanPham);
@@ -1325,9 +1378,16 @@ public class AppController {
         if(ten != null && hang != null){
             if(ten.isEmpty() && hang.isEmpty()){
                 return "redirect:/khach-hang/danh-sach-san-pham/phu-tung";
+            }else if(!ten.isEmpty() && hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByTenSanPham(ten);
+                model.addAttribute("listPhutung", listSanPham);
+            }else if(ten.isEmpty() && !hang.isEmpty()){
+                listSanPham = sanPhamRepository.findByHangSanPham(hang);
+                model.addAttribute("listPhutung", listSanPham);
+            }else{
+                listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
+                model.addAttribute("listPhutung", listSanPham);
             }
-            listSanPham = sanPhamRepository.findByHangAndTen(ten, hang);
-            model.addAttribute("listPhutung", listSanPham);
         } else {
             listSanPham = sanPhamRepository.findByLoaiSanPham("Phụ tùng");
             model.addAttribute("listPhutung", listSanPham);
@@ -1348,6 +1408,9 @@ public class AppController {
                 listXuatKhoKH.add(xk);
             }
         }
+
+        listXuatKhoKH.sort(Comparator.comparing(XuatKho::getNgayNhap));
+        Collections.reverse(listXuatKhoKH);
 
         model.addAttribute("listXuatKho", listXuatKhoKH);
         return "kh_lich_su";
