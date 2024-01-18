@@ -28,4 +28,4 @@ git clone https://github.com/nhp1807/Project2-QuanLyXuatNhapKho.git
 - Tiếp theo sử dụng Visual Studio Code hoặc IntelliJ mở folder dẫn vào chương trình. Để chạy chương trình, ta chạy file 'QuanLyNhapXuatKhoApplication.java' theo đường dẫn sau:  '\src\main\java\com\example\QuanLyNhapXuatKho\QuanLyNhapXuatKhoApplication.java'
 
 - Sau khi khởi chạy server thành công. Tiếp theo mở trình duyệt và truy cập vào đường dẫn localhost:8080 để bắt đầu sử dụng chương trình.
-- Tài khoản được cung cấp của ***admin*** là ***admin*** và mật khẩu là admin
+- Tài khoản được cung cấp của admin là ***admin*** và mật khẩu là ***admin***
