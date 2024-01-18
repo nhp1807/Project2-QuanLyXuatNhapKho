@@ -1749,6 +1749,8 @@ public class AppController {
     @GetMapping("/ke-toan/danh-sach-nhap-kho")
     public String showDanhSachNhapKhoKT(Model model) {
         List<NhapKho> listNhapKho = nhapKhoService.getAllNhapKho();
+        listNhapKho.sort(Comparator.comparing(NhapKho::getNgayNhap));
+        Collections.reverse(listNhapKho);
         model.addAttribute("listNhapKho", listNhapKho);
         model.addAttribute("nhaCungCapService", nhaCungCapService);
 //        model.addAttribute("lítNhaCungCap", nhaCungCapService.getAllNhaCungCap());
